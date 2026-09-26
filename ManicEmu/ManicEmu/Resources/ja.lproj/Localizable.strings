@@ -1160,3 +1160,10 @@ PlayCaseは、アクセサリーやスキンとの互換性を考慮して作ら
 "ICloudROMSizeLimitUnlimited" = "制限なし";
 "ICloudROMSizeLimitDesc" = "このサイズを超える ROM はこのデバイスにのみ保持され、大きなディスクイメージ 1 本で iCloud Drive がいっぱいになるのを防ぎます。セーブデータ、セーブステート、スキン、設定には影響しません。";
 "ICloudROMTransferLimitDesc" = "この 2 つの制限は ROM ファイルにのみ適用されます。セーブデータ、セーブステート、スキン、設定は、ネットワークの種類やサイズに関係なく同期を続けます。ゲームを開くと、制限で同期が止まっていても ROM は必ずダウンロードされます。";
+
+// Play Time Section
+"PlayTimeTracking" = "プレイ時間を記録";
+"PlayTimeTrackingDesc" = "オフにすると、Manic EMU はプレイ時間を記録しなくなります。記録済みのプレイ時間は保持されます。";
+"ClearPlayTime" = "プレイ時間を消去";
+"ClearPlayTimeAlert" = "すべてのゲームのプレイ時間を消去しますか？この操作は取り消せません。";
+"ClearPlayTimeSuccess" = "プレイ時間を消去しました";

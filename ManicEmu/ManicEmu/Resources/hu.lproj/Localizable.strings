@@ -1165,3 +1165,10 @@ Ha fejleszteni szeretnéd a beállításod, a PlayCase tökéletes kiegészítő
 "ICloudROMSizeLimitUnlimited" = "Nincs korlát";
 "ICloudROMSizeLimitDesc" = "Az ennél nagyobb ROM-ok csak ezen az eszközön maradnak, hogy egyetlen nagy lemezkép ne töltse fel az iCloud Drive-ot. A játékmentések, azonnali mentések, skinek és beállítások soha nem érintettek.";
 "ICloudROMTransferLimitDesc" = "Ez a két korlát csak a ROM-fájlokra vonatkozik. A játékmentések, azonnali mentések, skinek és beállítások bármely hálózaton és bármilyen méretben tovább szinkronizálódnak. A játék megnyitásakor a ROM mindig letöltődik, még akkor is, ha a korlát egyébként megakadályozná a szinkronizálást.";
+
+// Play Time Section
+"PlayTimeTracking" = "Játékidő rögzítése";
+"PlayTimeTrackingDesc" = "Kikapcsolva a Manic EMU nem méri tovább, mennyit játszol. A korábban rögzített játékidő megmarad.";
+"ClearPlayTime" = "Játékidő törlése";
+"ClearPlayTimeAlert" = "Törlöd az összes játék játékidejét? Ez nem vonható vissza.";
+"ClearPlayTimeSuccess" = "Játékidő törölve";

@@ -1158,3 +1158,10 @@ Nếu bạn muốn nâng cấp thiết lập của mình, PlayCase là sự kế
 "ICloudROMSizeLimitUnlimited" = "Không giới hạn";
 "ICloudROMSizeLimitDesc" = "ROM lớn hơn mức này chỉ giữ trên thiết bị này, để một ảnh đĩa lớn không làm đầy iCloud Drive. Bản lưu, lưu trữ tức thời, skin và cài đặt không bị ảnh hưởng.";
 "ICloudROMTransferLimitDesc" = "Hai giới hạn này chỉ áp dụng cho tệp ROM. Bản lưu, lưu trữ tức thời, skin và cài đặt vẫn đồng bộ trên mọi mạng và mọi dung lượng. Mở trò chơi luôn tải ROM, dù giới hạn lẽ ra sẽ chặn đồng bộ.";
+
+// Play Time Section
+"PlayTimeTracking" = "Ghi thời gian chơi";
+"PlayTimeTrackingDesc" = "Khi tắt, Manic EMU ngừng đếm thời gian bạn chơi. Thời gian chơi đã ghi trước đó vẫn được giữ.";
+"ClearPlayTime" = "Xóa thời gian chơi";
+"ClearPlayTimeAlert" = "Xóa thời gian chơi của tất cả trò chơi? Không thể hoàn tác thao tác này.";
+"ClearPlayTimeSuccess" = "Đã xóa thời gian chơi";

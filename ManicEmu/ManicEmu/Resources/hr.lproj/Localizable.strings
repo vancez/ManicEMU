@@ -1164,3 +1164,10 @@ Ako želite unaprijediti svoju postavu, PlayCase je savršen dodatak ovom skinu.
 "ICloudROMSizeLimitUnlimited" = "Bez ograničenja";
 "ICloudROMSizeLimitDesc" = "ROM-ovi veći od ove veličine ostaju samo na ovom uređaju, da jedna velika slika diska ne popuni iCloud Drive. Spremanja igre, save stateovi, skinovi i postavke nikad nisu zahvaćeni.";
 "ICloudROMTransferLimitDesc" = "Ova dva ograničenja vrijede samo za ROM datoteke. Spremanja igre, save stateovi, skinovi i postavke i dalje se sinkroniziraju na bilo kojoj mreži i bilo koje veličine. Otvaranje igre uvijek preuzima ROM, čak i kad bi ograničenje inače spriječilo sinkronizaciju.";
+
+// Play Time Section
+"PlayTimeTracking" = "Bilježi vrijeme igranja";
+"PlayTimeTrackingDesc" = "Kada je isključeno, Manic EMU prestaje mjeriti koliko dugo igrate. Već zabilježeno vrijeme igranja ostaje sačuvano.";
+"ClearPlayTime" = "Obriši vrijeme igranja";
+"ClearPlayTimeAlert" = "Obrisati vrijeme igranja za sve igre? Ovo se ne može poništiti.";
+"ClearPlayTimeSuccess" = "Vrijeme igranja obrisano";

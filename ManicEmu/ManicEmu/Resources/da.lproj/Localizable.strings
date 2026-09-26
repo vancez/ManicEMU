@@ -1162,3 +1162,10 @@ Hvis du vil forbedre dit setup, er PlayCase et perfekt match til dette skin.";
 "ICloudROMSizeLimitUnlimited" = "Ingen grænse";
 "ICloudROMSizeLimitDesc" = "ROM-filer større end dette bliver kun på denne enhed, så et enkelt stort diskimage ikke fylder iCloud Drive. Gemte spil, savestates, skins og indstillinger påvirkes aldrig.";
 "ICloudROMTransferLimitDesc" = "Disse to grænser gælder kun for ROM-filer. Gemte spil, savestates, skins og indstillinger bliver ved med at synkronisere over alle netværk og uanset størrelse. Når du åbner et spil, downloades ROM-filen altid, selv hvis en grænse ellers ville forhindre synkronisering.";
+
+// Play Time Section
+"PlayTimeTracking" = "Registrer spilletid";
+"PlayTimeTrackingDesc" = "Når den er slået fra, stopper Manic EMU med at tælle, hvor længe du spiller. Allerede registreret spilletid bevares.";
+"ClearPlayTime" = "Ryd spilletid";
+"ClearPlayTimeAlert" = "Ryd spilletid for alle spil? Dette kan ikke fortrydes.";
+"ClearPlayTimeSuccess" = "Spilletid ryddet";

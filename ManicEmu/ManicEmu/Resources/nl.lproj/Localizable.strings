@@ -1165,3 +1165,10 @@ Als je je setup naar een hoger niveau wilt tillen, is PlayCase de perfecte match
 "ICloudROMSizeLimitUnlimited" = "Geen limiet";
 "ICloudROMSizeLimitDesc" = "ROM's groter dan dit blijven alleen op dit apparaat, zodat één groot schijfimage iCloud Drive niet volloopt. Gameopslag, savestates, skins en instellingen worden nooit beïnvloed.";
 "ICloudROMTransferLimitDesc" = "Deze twee limieten gelden alleen voor ROM-bestanden. Gameopslag, savestates, skins en instellingen blijven synchroniseren via elk netwerk en bij elke grootte. Als je een game opent, wordt de ROM altijd gedownload, ook als een limiet de synchronisatie anders zou tegenhouden.";
+
+// Play Time Section
+"PlayTimeTracking" = "Speeltijd bijhouden";
+"PlayTimeTrackingDesc" = "Als dit uit staat, houdt Manic EMU niet meer bij hoe lang je speelt. Al bijgehouden speeltijd blijft bewaard.";
+"ClearPlayTime" = "Speeltijd wissen";
+"ClearPlayTimeAlert" = "Speeltijd van alle games wissen? Dit kan niet ongedaan worden gemaakt.";
+"ClearPlayTimeSuccess" = "Speeltijd gewist";

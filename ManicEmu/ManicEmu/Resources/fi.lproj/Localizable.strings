@@ -1167,3 +1167,10 @@ Jos haluat parantaa kokoonpanoasi, PlayCase on täydellinen lisä tälle skinill
 "ICloudROMSizeLimitUnlimited" = "Ei rajaa";
 "ICloudROMSizeLimitDesc" = "Tätä suuremmat ROM-tiedostot jäävät vain tälle laitteelle, jotta yksi suuri levykuva ei täytä iCloud Drivea. Pelitallennuksiin, pikatallennuksiin, skineihin ja asetuksiin tällä ei ole vaikutusta.";
 "ICloudROMTransferLimitDesc" = "Nämä kaksi rajoitusta koskevat vain ROM-tiedostoja. Pelitallennukset, pikatallennukset, skinit ja asetukset synkronoituvat edelleen kaikissa verkoissa ja kaikenkokoisina. Pelin avaaminen lataa ROM-tiedoston aina, vaikka rajoitus muuten estäisi synkronoinnin.";
+
+// Play Time Section
+"PlayTimeTracking" = "Tallenna peliaika";
+"PlayTimeTrackingDesc" = "Kun pois päältä, Manic EMU ei enää laske pelaamasi aikaa. Aiemmin tallennettu peliaika säilyy.";
+"ClearPlayTime" = "Tyhjennä peliaika";
+"ClearPlayTimeAlert" = "Tyhjennetäänkö kaikkien pelien peliaika? Tätä ei voi peruuttaa.";
+"ClearPlayTimeSuccess" = "Peliaika tyhjennetty";

@@ -67,6 +67,8 @@ class SettingsListView: BaseView {
                                   .init(type: .theme),
                                   .init(type: .quickGame),
                                   .init(type: .autoSaveState),
+                                  .init(type: .playTimeTracking),
+                                  .init(type: .clearPlayTime),
                                   .init(type: .skin),
                                   .init(type: .coverScraping)]
                 
@@ -243,6 +245,18 @@ class SettingsListView: BaseView {
     
     private func reloadData() {
         listPageView?.updatePage(getListPage())
+    }
+
+    private func clearPlayTime() {
+        Game.change { realm in
+            realm.objects(Game.self).forEach { game in
+                guard !game.isDeleted else { return }
+                game.totalPlayDuration = 0
+                game.latestPlayDuration = 0
+            }
+        }
+        NotificationCenter.default.post(name: R.NotificationName.GameSortChange, object: nil)
+        UIView.makeToast(message: R.string.localizable.clearPlayTimeSuccess())
     }
     
     private func reloadCell(for item: SettingItem) {
@@ -435,6 +449,18 @@ class SettingsListView: BaseView {
                             upateSwitchSettings(extraValue: subActions?.extraValue, cellData: cellData, indexPath: indexPath) {
                                 Settings.defalut.autoSaveState = $0
                             }
+
+                        case .playTimeTracking:
+                            if let value = upateSwitchSettings(extraValue: subActions?.extraValue, cellData: cellData, indexPath: indexPath) {
+                                Settings.setPlayTimeTrackingEnabled(value)
+                            }
+
+                        case .clearPlayTime:
+                            UIView.makeAlert(detail: R.string.localizable.clearPlayTimeAlert(),
+                                             confirmTitle: R.string.localizable.clearPlayTime(),
+                                             confirmAction: { [weak self] in
+                                self?.clearPlayTime()
+                            })
                             
                         case .respectSilentMode:
                             upateSwitchSettings(extraValue: subActions?.extraValue, cellData: cellData, indexPath: indexPath) {

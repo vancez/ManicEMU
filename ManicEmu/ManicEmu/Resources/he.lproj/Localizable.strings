@@ -1167,3 +1167,10 @@ PlayCase מתמקדת במעטפות iPhone איכותיות, המיוצרות �
 "ICloudROMSizeLimitUnlimited" = "ללא הגבלה";
 "ICloudROMSizeLimitDesc" = "קבצי ROM גדולים מזה נשארים במכשיר זה בלבד, כדי שתמונת דיסק גדולה אחת לא תמלא את iCloud Drive. שמירות משחק, שמירות מיידיות, skin והגדרות אינם מושפעים.";
 "ICloudROMTransferLimitDesc" = "שתי המגבלות האלה חלות על קבצי ROM בלבד. שמירות משחק, שמירות מיידיות, skin והגדרות ממשיכים להסתנכרן בכל רשת ובכל גודל. פתיחת משחק תמיד מורידה את ה-ROM, גם אם מגבלה הייתה מונעת סנכרון.";
+
+// Play Time Section
+"PlayTimeTracking" = "תיעוד זמן משחק";
+"PlayTimeTrackingDesc" = "כשהאפשרות כבויה, Manic EMU מפסיק לספור כמה זמן שיחקת. זמן המשחק שכבר נרשם נשמר.";
+"ClearPlayTime" = "נקה זמן משחק";
+"ClearPlayTimeAlert" = "לנקות את זמן המשחק בכל המשחקים? לא ניתן לבטל פעולה זו.";
+"ClearPlayTimeSuccess" = "זמן המשחק נמחק";

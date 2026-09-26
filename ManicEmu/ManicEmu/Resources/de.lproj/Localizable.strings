@@ -1165,3 +1165,10 @@ Wenn Sie Ihr Setup verbessern möchten, ist PlayCase die perfekte Ergänzung zu 
 "ICloudROMSizeLimitUnlimited" = "Kein Limit";
 "ICloudROMSizeLimitDesc" = "ROMs, die größer sind als dieser Wert, bleiben nur auf diesem Gerät, damit ein einzelnes großes Disc-Image iCloud Drive nicht füllt. Spielstände, Savestates, Skins und Einstellungen sind nie betroffen.";
 "ICloudROMTransferLimitDesc" = "Diese beiden Limits gelten nur für ROM-Dateien. Spielstände, Savestates, Skins und Einstellungen werden weiterhin über jedes Netz und in jeder Größe synchronisiert. Beim Öffnen eines Spiels wird die ROM stets heruntergeladen, auch wenn ein Limit die Synchronisierung sonst verhindern würde.";
+
+// Play Time Section
+"PlayTimeTracking" = "Spielzeit erfassen";
+"PlayTimeTrackingDesc" = "Wenn deaktiviert, zählt Manic EMU nicht mehr mit, wie lange du spielst. Bereits erfasste Spielzeit bleibt erhalten.";
+"ClearPlayTime" = "Spielzeit löschen";
+"ClearPlayTimeAlert" = "Spielzeit für alle Spiele löschen? Dies kann nicht rückgängig gemacht werden.";
+"ClearPlayTimeSuccess" = "Spielzeit gelöscht";

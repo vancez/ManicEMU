@@ -166,6 +166,14 @@ class Settings: Object, ObjectUpdatable {
         Settings.defalut.getExtraString(key: ExtraKey.steamGridDBAPIKey.rawValue)
     }
     
+    static var isPlayTimeTrackingEnabled: Bool {
+        Settings.defalut.getExtraBool(key: ExtraKey.trackPlayTime.rawValue) ?? true
+    }
+
+    static func setPlayTimeTrackingEnabled(_ enabled: Bool) {
+        Settings.defalut.updateExtra(key: ExtraKey.trackPlayTime.rawValue, value: enabled)
+    }
+
     static var nickname: String {
         let nickname = Settings.defalut.getExtraString(key: ExtraKey.nickname.rawValue)?.trimmed
         if let nickname, !nickname.isEmpty {

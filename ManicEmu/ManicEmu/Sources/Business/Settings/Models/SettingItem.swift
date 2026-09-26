@@ -41,7 +41,9 @@ struct SettingItem {
              privacyPolicy,
              featuredItems,
              coverScraping,
-             resetTips
+             resetTips,
+             playTimeTracking,
+             clearPlayTime
     }
     
     var type: ItemType
@@ -98,6 +100,8 @@ struct SettingItem {
             return .switch(.init(state: (Settings.defalut.getExtraBool(key: ExtraKey.rumble.rawValue) ?? false) ? .on : .off))
         case .skinSound:
             return .switch(.init(state: (Settings.defalut.getExtraBool(key: ExtraKey.skinSoundEffects.rawValue) ?? true) ? .on : .off))
+        case .playTimeTracking:
+            return .switch(.init(state: Settings.isPlayTimeTrackingEnabled ? .on : .off))
         default:
             return nil
         }
@@ -112,6 +116,7 @@ struct SettingItem {
                 .respectSilentMode,
                 .rumble,
                 .skinSound,
+                .playTimeTracking,
                 .appearance:
             return nil
             
@@ -132,8 +137,10 @@ struct SettingItem {
             [R.Color.Purple]
         case .theme, .onlinePlay, .FAQ, .featuredItems:
             [R.Color.Orange]
-        case .autoSaveState, .rumble, .feedback, .resetTips:
+        case .autoSaveState, .rumble, .feedback, .resetTips, .playTimeTracking:
             [R.Color.Green]
+        case .clearPlayTime:
+            [R.Color.Red]
         case .skin, .skinSound, .about:
             [R.Color.Pink]
         case .airPlay, .qq, .telegram, .shareApp, .coverScraping:
@@ -215,6 +222,10 @@ struct SettingItem {
             ASIcon.symbolImage(R.image.cover_iconSymbols(), colors: iconColors)
         case .resetTips:
             ASIcon.symbol(.textBubble, colors: iconColors)
+        case .playTimeTracking:
+            ASIcon.symbol(.clock, colors: iconColors)
+        case .clearPlayTime:
+            ASIcon.symbol(.trash, colors: iconColors)
         }
     }
     
@@ -284,6 +295,10 @@ struct SettingItem {
             R.string.localizable.coverScraping()
         case .resetTips:
             R.string.localizable.resetTips()
+        case .playTimeTracking:
+            R.string.localizable.playTimeTracking()
+        case .clearPlayTime:
+            R.string.localizable.clearPlayTime()
         }
     }
     
@@ -330,6 +345,8 @@ struct SettingItem {
 #endif
         } else if type == .resetTips {
             return R.string.localizable.resetTipsDesc()
+        } else if type == .playTimeTracking {
+            return R.string.localizable.playTimeTrackingDesc()
         }
         return nil
     }

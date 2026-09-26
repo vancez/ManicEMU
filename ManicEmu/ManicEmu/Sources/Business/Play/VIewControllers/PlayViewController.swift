@@ -1059,7 +1059,7 @@ extension PlayViewController {
     /// 计算游戏时间
     private func calculatePlayTime() {
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+            guard let self = self, Settings.isPlayTimeTrackingEnabled else { return }
             if let latestPlayDate =  manicGame.latestPlayDate {
                 Game.change { realm in
                     self.manicGame.latestPlayDuration = Date().timeIntervalSince1970ms - latestPlayDate.timeIntervalSince1970ms

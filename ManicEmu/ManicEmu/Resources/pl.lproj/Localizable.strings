@@ -1138,3 +1138,10 @@ Jeśli chcesz ulepszyć swoją konfigurację, PlayCase jest idealnym uzupełnien
 "ICloudROMSizeLimitUnlimited" = "Bez limitu";
 "ICloudROMSizeLimitDesc" = "ROM-y większe niż ten rozmiar zostają tylko na tym urządzeniu, żeby pojedynczy duży obraz płyty nie zapełnił iCloud Drive. Zapisy gry, savestate’y, skóry i ustawienia nie są nigdy naruszane.";
 "ICloudROMTransferLimitDesc" = "Te dwa limity dotyczą tylko plików ROM. Zapisy gry, savestate’y, skóry i ustawienia nadal synchronizują się w dowolnej sieci i przy dowolnym rozmiarze. Otwarcie gry zawsze pobiera ROM, nawet gdy limit inaczej by to wstrzymał.";
+
+// Play Time Section
+"PlayTimeTracking" = "Zapisuj czas gry";
+"PlayTimeTrackingDesc" = "Po wyłączeniu Manic EMU przestaje liczyć, jak długo grasz. Zapisany czas gry zostaje zachowany.";
+"ClearPlayTime" = "Wyczyść czas gry";
+"ClearPlayTimeAlert" = "Wyczyścić czas gry dla wszystkich gier? Tej operacji nie można cofnąć.";
+"ClearPlayTimeSuccess" = "Czas gry wyczyszczony";

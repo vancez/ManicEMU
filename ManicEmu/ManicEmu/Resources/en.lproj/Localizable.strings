@@ -1198,3 +1198,10 @@ Press the controller button to complete mapping...";
 "ScrollToLastGame" = "Scroll to Last Game";
 "ScrollToFirstGame" = "Scroll to First Game";
 "WhatsNew" = "What’s New in v%@";
+
+// Play Time Section
+"PlayTimeTracking" = "Record Play Time";
+"PlayTimeTrackingDesc" = "When off, Manic EMU stops counting how long you play. Play time already recorded is kept.";
+"ClearPlayTime" = "Clear Play Time";
+"ClearPlayTimeAlert" = "Clear play time for every game? This cannot be undone.";
+"ClearPlayTimeSuccess" = "Play time cleared";

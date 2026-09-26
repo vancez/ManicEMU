@@ -1193,3 +1193,10 @@
 "ICloudROMSizeLimitUnlimited" = "不限制";
 "ICloudROMSizeLimitDesc" = "超过此大小的 ROM 只会保留在本机，避免单个大型光盘镜像占满 iCloud 云盘。游戏存档、即时存档、皮肤和设置不受影响。";
 "ICloudROMTransferLimitDesc" = "这两项限制仅作用于 ROM 文件。游戏存档、即时存档、皮肤和设置会在任意网络、任意大小下继续同步。打开游戏时始终会下载对应 ROM，即使限制本会阻止同步。";
+
+// Play Time Section
+"PlayTimeTracking" = "记录游戏时长";
+"PlayTimeTrackingDesc" = "关闭后将不再统计游戏时长，已记录的时长会保留。";
+"ClearPlayTime" = "清除游戏时长";
+"ClearPlayTimeAlert" = "确定清除所有游戏的时长统计？此操作无法撤销。";
+"ClearPlayTimeSuccess" = "游戏时长已清除";

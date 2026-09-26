@@ -109,4 +109,6 @@ enum ExtraKey: String {
     case rommServiceId
     /// Play-time milliseconds already pushed to RomM; only the local delta is sent next time.
     case rommPlayDurationPushed
+    /// Whether game play time is recorded. Missing means enabled.
+    case trackPlayTime
 }

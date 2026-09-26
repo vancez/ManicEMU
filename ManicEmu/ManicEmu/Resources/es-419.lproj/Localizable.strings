@@ -1164,3 +1164,10 @@ Si quieres mejorar tu experiencia, PlayCase combina perfecto con esta funda.";
 "ICloudROMSizeLimitUnlimited" = "Sin límite";
 "ICloudROMSizeLimitDesc" = "Los ROM más grandes que este tamaño se quedan solo en este dispositivo, para que una sola imagen de disco grande no llene iCloud Drive. Los guardados, los estados de guardado, las skins y los ajustes no se ven afectados.";
 "ICloudROMTransferLimitDesc" = "Estos dos límites se aplican solo a los archivos ROM. Los guardados, los estados de guardado, las skins y los ajustes siguen sincronizándose en cualquier red y con cualquier tamaño. Al abrir un juego siempre se descarga su ROM, aunque un límite impida sincronizarlo.";
+
+// Play Time Section
+"PlayTimeTracking" = "Registrar tiempo de juego";
+"PlayTimeTrackingDesc" = "Si se desactiva, Manic EMU deja de contar cuánto tiempo juegas. El tiempo de juego ya registrado se conserva.";
+"ClearPlayTime" = "Borrar tiempo de juego";
+"ClearPlayTimeAlert" = "¿Borrar el tiempo de juego de todos los juegos? Esta acción no se puede deshacer.";
+"ClearPlayTimeSuccess" = "Tiempo de juego borrado";
