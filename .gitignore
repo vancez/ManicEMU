@@ -93,6 +93,7 @@ iOSInjectionProject/
 CoresSources
 Dependencies/*
 !Dependencies/Libretro
+!Dependencies/RswiftResources
 i18n/
 Scripts/System.core.ver
 ManicEmu/ManicEmu/Resources/System.core

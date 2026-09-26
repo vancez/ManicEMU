@@ -7,7 +7,7 @@
   <p>
     <img src="https://img.shields.io/badge/status-active-2f855a?style=flat-square" alt="Status: active">
     <img src="https://img.shields.io/badge/platform-iOS%2015%2B%20%2F%20iPadOS-111827?style=flat-square" alt="Platform: iOS 15+ and iPadOS">
-    <img src="https://img.shields.io/badge/distribution-App%20Store%20%2F%20StikStore%20%2F%20SideStore-1f6feb?style=flat-square" alt="Distribution: App Store, StikStore, SideStore">
+    <img src="https://img.shields.io/badge/distribution-App%20Store%20%2F%20AltStore%20%2F%20StikStore%20%2F%20SideStore-1f6feb?style=flat-square" alt="Distribution: App Store, AltStore, StikStore, SideStore">
     <img src="https://img.shields.io/badge/license-AGPL%20v3-blue?style=flat-square" alt="License: AGPL v3">
   </p>
 </div>
@@ -40,7 +40,7 @@ licensing in one place.
 
 ## At a Glance
 
-- App distribution: App Store, StikStore, and SideStore.
+- App distribution: App Store, AltStore, StikStore, and SideStore.
 - Source target: iOS app built with Xcode 16+, iOS SDK 15+, and Swift 5.9+.
 - Emulator model: multiple emulator cores, including Libretro-based frameworks
   and dedicated cores.
@@ -55,7 +55,7 @@ licensing in one place.
 ## Availability
 
 Manic EMU is available through Apple's App Store and through sideloading
-channels including StikStore and SideStore.
+channels including AltStore, StikStore, and SideStore.
 
 <p align="center">
   <a href="https://itunes.apple.com/us/app/id6743335790">
@@ -72,6 +72,20 @@ channels including StikStore and SideStore.
 Compatibility and performance vary by device, iOS version, emulator core, game,
 and JIT availability. App Store builds and sideloaded builds may differ where
 Apple services, signing, or JIT workflows are involved.
+
+### AltStore Source
+
+Add Manic EMU as an AltStore source, then install it from there:
+
+```
+https://github.com/vancez/ManicEMU/releases/latest/download/altstore.json
+```
+
+Each release publishes an unsigned sideload build together with its own
+`altstore.json`, so the `/latest/` address above always serves the newest
+version. AltStore, SideStore, or StikStore re-signs the IPA with your own
+certificate during install, so a free Apple ID is enough. iCloud sync and App
+Group features are unavailable in sideloaded builds.
 
 ## Supported Platforms
 
@@ -158,6 +172,24 @@ Some cores are integrated as binary frameworks, while most cores are built from
 upstream source code without modifications. Upstream core changes are tracked
 through the [Daiuno repositories](https://github.com/Daiuno?tab=repositories).
 
+### Release Builds
+
+`.github/workflows/release.yml` builds the sideload IPA on GitHub Actions and
+publishes it, together with a generated `altstore.json`, to a GitHub Release.
+
+The workflow runs on `v*` tags and on manual dispatch. Before building, it fails
+if the tag does not match `APP_VERSION` in
+`ManicEmu/ManicEmu/Resources/Config-Base.xcconfig`, so bump `APP_VERSION` and
+`APP_BUILD_VERSION` there first, then tag:
+
+```sh
+git tag v2.0.1 && git push origin v2.0.1
+```
+
+The build uses the `ManicEmuSideload` scheme and the `SideloadRelease`
+configuration, with code signing disabled. The resulting IPA is unsigned and is
+re-signed on device by AltStore, SideStore, or StikStore.
+
 ## Documentation
 
 - [Manic EMU upstream README](https://github.com/Manic-EMU/ManicEMU/blob/main/README.md)
@@ -194,6 +226,7 @@ bundled emulator cores, runtime assets, and supporting project documentation:
 | `System.core/` | Runtime system assets used by emulator cores. |
 | `Dependencies/` | App dependencies. |
 | `Scripts/` | Build and maintenance scripts. |
+| `.github/workflows/` | Release automation that builds the sideload IPA and publishes it to GitHub Releases. |
 | `ANTI_PIRACY.md` | Project policy for legal game backups, BIOS files, homebrew, and public-domain content. |
 | `CONTRIBUTING.md` | Contributor setup, issue-reporting, pull-request, and commit-message guidance. |
 | `THIRD_PARTY_NOTICES.md` | Notices for bundled open-source components and dependencies. |

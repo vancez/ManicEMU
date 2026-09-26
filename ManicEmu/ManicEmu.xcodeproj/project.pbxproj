@@ -749,6 +749,7 @@
 		57909543303C7D9100A53656 /* SideMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 578E26D82FD41E1200A2749A /* SideMenu */; };
 		57909544303C7D9100A53656 /* ColorfulX in Frameworks */ = {isa = PBXBuildFile; productRef = 5726FF452D741F5C00041AD5 /* ColorfulX */; };
 		57909545303C7D9100A53656 /* RswiftLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 576060282D24E8BD00A98B0C /* RswiftLibrary */; };
+		7A5DEF012E100003A5360013 /* RswiftResourcesVendored in Frameworks */ = {isa = PBXBuildFile; productRef = 7A5DEF012E100002A5360012 /* RswiftResourcesVendored */; };
 		57909547303C7D9100A53656 /* BetterSegmentedControl in Frameworks */ = {isa = PBXBuildFile; productRef = 57C759142FD42CB70093A2B3 /* BetterSegmentedControl */; };
 		57909548303C7D9100A53656 /* ProHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 578E20A92FD1C40700A2749A /* ProHUD */; };
 		57909549303C7D9100A53656 /* DeltaCore in Frameworks */ = {isa = PBXBuildFile; productRef = 578E23DF2FD30F1100A2749A /* DeltaCore */; };
@@ -6892,7 +6893,7 @@
 				57909543303C7D9100A53656 /* SideMenu in Frameworks */,
 				579DDAE0305AE9E5003AB167 /* SwiftCloudDrive in Frameworks */,
 				57909544303C7D9100A53656 /* ColorfulX in Frameworks */,
-				57909545303C7D9100A53656 /* RswiftLibrary in Frameworks */,
+				7A5DEF012E100003A5360013 /* RswiftResources in Frameworks */,
 				57909547303C7D9100A53656 /* BetterSegmentedControl in Frameworks */,
 				57909548303C7D9100A53656 /* ProHUD in Frameworks */,
 				57909549303C7D9100A53656 /* DeltaCore in Frameworks */,
@@ -13467,6 +13468,9 @@
 				57E8A110304A4A1100000009 /* PBXTargetDependency */,
 			);
 			name = ManicEmuSideload;
+			packageProductDependencies = (
+				7A5DEF012E100002A5360012 /* RswiftResourcesVendored */,
+			);
 			productName = ManicEMU;
 			productReference = 5790958B303C7D9100A53656 /* ManicEmuSideload.app */;
 			productType = "com.apple.product-type.application";
@@ -13651,6 +13655,7 @@
 			);
 			mainGroup = A5A001E624555A5F006E0F0E;
 			packageReferences = (
+				7A5DEF012E100001A5360011 /* XCLocalSwiftPackageReference "../Dependencies/RswiftResources" */,
 				576060272D24E8BD00A98B0C /* XCRemoteSwiftPackageReference "R" */,
 				57DF84BD2D637A1A00AA0AAB /* XCRemoteSwiftPackageReference "DominantColors" */,
 				57F632E12D714E46007270E8 /* XCRemoteSwiftPackageReference "WebDAVKitSwift" */,
@@ -15664,7 +15669,7 @@
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_MODULE_VERIFIER_FLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited) -module-alias RswiftResources=RswiftResourcesVendored";
 				PRODUCT_BUNDLE_IDENTIFIER = "${APP_BUNDLE_IDENTIFIER}";
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "${APP_BUNDLE_IDENTIFIER}";
 				PRODUCT_MODULE_NAME = ManicEmu;
@@ -16506,6 +16511,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		7A5DEF012E100001A5360011 /* XCLocalSwiftPackageReference "../Dependencies/RswiftResources" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Dependencies/RswiftResources;
+		};
 		576C8C5A3032B57A00AEB08F /* XCLocalSwiftPackageReference "../Dependencies/IceCream" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../Dependencies/IceCream;
@@ -17017,6 +17026,11 @@
 			package = 576060272D24E8BD00A98B0C /* XCRemoteSwiftPackageReference "R" */;
 			productName = RswiftLibrary;
 		};
+		7A5DEF012E100002A5360012 /* RswiftResourcesVendored */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7A5DEF012E100001A5360011 /* XCLocalSwiftPackageReference "../Dependencies/RswiftResources" */;
+			productName = RswiftResourcesVendored;
+		};
 		576C8C673032B5B700AEB08F /* IceCream */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 576C8C5A3032B57A00AEB08F /* XCLocalSwiftPackageReference "../Dependencies/IceCream" */;
@@ -17048,17 +17062,17 @@
 		};
 		578E209D2FD1B8CB00A2749A /* CollectionViewPagingLayout */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 578E209C2FD1B8CB00A2749A /* XCRemoteSwiftPackageReference "CollectionViewPagingLayout" */;
+			package = 57ABFAC82FE98443001C1425 /* XCLocalSwiftPackageReference "../Dependencies/CollectionViewPagingLayout" */;
 			productName = CollectionViewPagingLayout;
 		};
 		578E20A22FD1B94E00A2749A /* DNSPageView */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 578E20A12FD1B94D00A2749A /* XCRemoteSwiftPackageReference "DNSPageView" */;
+			package = 57ABFACF2FE9849C001C1425 /* XCLocalSwiftPackageReference "../Dependencies/DNSPageView" */;
 			productName = DNSPageView;
 		};
 		578E20A92FD1C40700A2749A /* ProHUD */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 578E20A82FD1C40700A2749A /* XCRemoteSwiftPackageReference "ProHUD" */;
+			package = 579453AD2FE4262700D32DD6 /* XCLocalSwiftPackageReference "../Dependencies/ProHUD" */;
 			productName = ProHUD;
 		};
 		578E23022FD27DA800A2749A /* CloudServiceKit */ = {
@@ -17146,12 +17160,12 @@
 		};
 		579096B4303F065800A53656 /* HXPhotoPicker */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 579096A9303F062500A53656 /* XCLocalSwiftPackageReference "../Dependencies/HXPhotoPicker" */;
+			package = 579096CF303F0B4C00A53656 /* XCRemoteSwiftPackageReference "HXPhotoPicker" */;
 			productName = HXPhotoPicker;
 		};
 		579096BA303F066D00A53656 /* HXPhotoPicker */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 579096A9303F062500A53656 /* XCLocalSwiftPackageReference "../Dependencies/HXPhotoPicker" */;
+			package = 579096CF303F0B4C00A53656 /* XCRemoteSwiftPackageReference "HXPhotoPicker" */;
 			productName = HXPhotoPicker;
 		};
 		579453AE2FE4262700D32DD6 /* ProHUD */ = {
@@ -17322,7 +17336,7 @@
 		};
 		57F632A22D6F17AB007270E8 /* SMBClient */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 57F632A12D6F17AB007270E8 /* XCRemoteSwiftPackageReference "SMBClient" */;
+			package = 578E22992FD1D57B00A2749A /* XCRemoteSwiftPackageReference "SMBClient" */;
 			productName = SMBClient;
 		};
 		57F632E22D714E46007270E8 /* WebDavKit */ = {

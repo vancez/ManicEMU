@@ -1,0 +1,379 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag, for example v2.0.1. Leave empty to use v<APP_VERSION> from Config-Base.xcconfig.'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  XCODE_PROJECT: ManicEmu/ManicEmu.xcodeproj
+  XCODE_SCHEME: ManicEmuSideload
+  XCODE_CONFIGURATION: SideloadRelease
+  APP_PRODUCT: ManicEmuSideload
+  CONFIG_XCCONFIG: ManicEmu/ManicEmu/Resources/Config-Base.xcconfig
+  BUNDLE_ID: com.aoshuang.manicemu
+  MIN_IOS: '15.0'
+  TINT_COLOR: '#7984FF'
+  DERIVED_DATA: ${{ github.workspace }}/DerivedData
+
+jobs:
+  build:
+    name: Build sideload IPA
+    # Requires Xcode 26. Change this label if the image is unavailable for the repository.
+    runs-on: macos-26
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+          fetch-depth: 0
+          lfs: true
+          submodules: recursive
+
+      - name: Pull LFS files inside submodules
+        run: git submodule foreach --recursive 'git lfs pull || true'
+
+      - name: Check toolchain
+        run: |
+          set -euo pipefail
+          xcodebuild -version
+          major=$(xcodebuild -version | head -1 | sed -E 's/^Xcode ([0-9]+).*/\1/')
+          if [ "${major:-0}" -lt 26 ]; then
+            echo "::error::Xcode 26 or newer is required, found Xcode $major. Pick a newer runner image."
+            exit 1
+          fi
+
+      - name: Check local Swift packages
+        run: |
+          set -euo pipefail
+          missing=0
+          for relative in $(grep -o 'relativePath = [^;]*' "$XCODE_PROJECT/project.pbxproj" | sed 's/relativePath = //; s/"//g'); do
+            dir="ManicEmu/$relative"
+            if [ -d "$dir" ]; then
+              echo "ok       $dir"
+            else
+              echo "::warning::missing local Swift package: $dir"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "::warning::Local Swift packages are missing from the checkout. Package resolution will fail unless those references are committed or switched to remote URLs."
+          fi
+
+      - name: Read version
+        id: version
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          version=$(grep -E '^APP_VERSION' "$CONFIG_XCCONFIG" | head -1 | cut -d= -f2 | tr -d '[:space:]')
+          build=$(grep -E '^APP_BUILD_VERSION' "$CONFIG_XCCONFIG" | head -1 | cut -d= -f2 | tr -d '[:space:]')
+          if [ -z "$version" ]; then
+            echo "::error::APP_VERSION not found in $CONFIG_XCCONFIG"
+            exit 1
+          fi
+          if [ -z "$build" ]; then
+            echo "::error::APP_BUILD_VERSION not found in $CONFIG_XCCONFIG"
+            exit 1
+          fi
+
+          if [ -n "${INPUT_TAG:-}" ]; then
+            tag="$INPUT_TAG"
+          elif [ "${GITHUB_REF_TYPE:-}" = "tag" ]; then
+            tag="$GITHUB_REF_NAME"
+          else
+            tag="v$version"
+          fi
+
+          tag_version="${tag#v}"
+          case "$tag_version" in
+            "$version"|"$version"-*) ;;
+            *)
+              echo "::error::Tag '$tag' does not match APP_VERSION '$version' in $CONFIG_XCCONFIG. Bump APP_VERSION, or pass a matching tag."
+              exit 1
+              ;;
+          esac
+
+          prerelease=false
+          case "$tag_version" in
+            *-*) prerelease=true ;;
+          esac
+
+          {
+            echo "version=$version"
+            echo "build=$build"
+            echo "tag=$tag"
+            echo "prerelease=$prerelease"
+          } >> "$GITHUB_OUTPUT"
+          echo "version=$version build=$build tag=$tag prerelease=$prerelease"
+
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.DERIVED_DATA }}/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('ManicEmu/ManicEmu.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: |
+            spm-${{ runner.os }}-
+
+      - name: Resolve Swift packages
+        run: |
+          set -euo pipefail
+          xcodebuild -resolvePackageDependencies \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -derivedDataPath "$DERIVED_DATA" \
+            -skipPackagePluginValidation \
+            -skipMacroValidation
+
+      - name: Build
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration "$XCODE_CONFIGURATION" \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "$DERIVED_DATA" \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            SWIFT_ENABLE_EXPLICIT_MODULES=NO \
+            build 2>&1 | tee "$RUNNER_TEMP/xcodebuild.log"
+
+      - name: Report build failures
+        if: failure()
+        run: |
+          set -uo pipefail
+          log="$RUNNER_TEMP/xcodebuild.log"
+          if [ ! -f "$log" ]; then
+            echo "No xcodebuild log was captured."
+            exit 0
+          fi
+
+          strip='s/^[0-9T:.Z-]+ //'
+          errors=$(grep -aE "(error|fatal error):" "$log" | grep -av "::error::" \
+            | sed -E "$strip" | cut -c1-900 | head -20)
+          if [ -n "$errors" ]; then
+            while IFS= read -r line; do
+              echo "::error::$line"
+            done <<< "$errors"
+          fi
+
+          {
+            echo "### Failed build commands"
+            echo
+            echo '```'
+            sed -n '/The following build commands failed/,/failures)/p' "$log" | tail -20 | sed -E "$strip"
+            echo '```'
+            echo
+            echo "### Compiler errors"
+            echo
+            echo '```'
+            echo "${errors:-none captured}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "--- last 60 lines ---"
+          tail -60 "$log"
+
+      - name: Package IPA
+        id: package
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          app_dir=$(find "$DERIVED_DATA/Build/Products" -maxdepth 2 -type d -name "$APP_PRODUCT.app" | head -1)
+          if [ -z "$app_dir" ]; then
+            echo "::error::Built app bundle not found under $DERIVED_DATA/Build/Products"
+            find "$DERIVED_DATA/Build/Products" -maxdepth 2 -type d | head -30
+            exit 1
+          fi
+          echo "app bundle: $app_dir"
+
+          built_version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app_dir/Info.plist")
+          built_build=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$app_dir/Info.plist")
+          echo "built version=$built_version build=$built_build"
+          if [ "$built_version" != "$VERSION" ]; then
+            echo "::error::Built CFBundleShortVersionString '$built_version' does not match APP_VERSION '$VERSION'"
+            exit 1
+          fi
+
+          mkdir -p dist/Payload
+          cp -R "$app_dir" dist/Payload/
+          ipa_name="ManicEMU-$VERSION.ipa"
+          rm -f "dist/$ipa_name"
+          (cd dist && zip -qry "$ipa_name" Payload)
+          rm -rf dist/Payload
+          echo "ipa: dist/$ipa_name ($(stat -f%z "dist/$ipa_name") bytes)"
+
+          icon=$(find "$app_dir" -maxdepth 1 -name 'AppIcon60x60@3x.png' | head -1)
+          if [ -z "$icon" ]; then
+            icon=$(find "$app_dir" -maxdepth 1 -name 'AppIcon*.png' | sort | tail -1)
+          fi
+          if [ -z "$icon" ]; then
+            echo "::error::No app icon PNG found in the built bundle"
+            exit 1
+          fi
+          sips -z 512 512 "$icon" --out dist/icon.png > /dev/null
+          echo "icon: dist/icon.png (from $(basename "$icon"))"
+
+          {
+            echo "ipa=dist/$ipa_name"
+            echo "size=$(stat -f%z "dist/$ipa_name")"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Generate altstore.json
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          BUILD: ${{ steps.version.outputs.build }}
+          TAG: ${{ steps.version.outputs.tag }}
+          SIZE: ${{ steps.package.outputs.size }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          release_base="https://github.com/$REPO/releases/download/$TAG"
+          raw_base="https://raw.githubusercontent.com/$REPO/$TAG"
+
+          screenshots=$(for i in $(seq -w 1 10); do printf '%s\n' "$raw_base/images_manicemu_ver5_a$i.jpg"; done \
+            | jq -R -s 'split("\n") | map(select(length > 0))')
+
+          jq -n \
+            --arg version "$VERSION" \
+            --arg build "$BUILD" \
+            --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg downloadURL "$release_base/ManicEMU-$VERSION.ipa" \
+            --arg iconURL "$release_base/icon.png" \
+            --arg headerURL "$raw_base/images_manicemu_ver5_a01.jpg" \
+            --arg website "https://github.com/$REPO" \
+            --arg bundleID "$BUNDLE_ID" \
+            --arg minIOS "$MIN_IOS" \
+            --arg tint "$TINT_COLOR" \
+            --argjson size "$SIZE" \
+            --argjson screenshots "$screenshots" \
+            '{
+              name: "Manic EMU",
+              identifier: "com.aoshuang.manicemu.altstore",
+              subtitle: "Retro game emulator for iPhone and iPad",
+              description: "Manic EMU runs console, arcade, computer, and mobile Java games on iPhone and iPad through multiple emulator cores, with a game library, custom skins, save states, cheats, shaders, controller support, and RetroAchievements.\n\nManic EMU does not include ROMs, ISOs, BIOS files, or copyrighted game data. Use legally owned backups, homebrew, and public-domain software only.",
+              iconURL: $iconURL,
+              headerURL: $headerURL,
+              website: $website,
+              tintColor: $tint,
+              featuredApps: [$bundleID],
+              apps: [
+                {
+                  name: "Manic EMU",
+                  bundleIdentifier: $bundleID,
+                  developerName: "Manic EMU",
+                  subtitle: "Retro game emulator for iPhone and iPad",
+                  localizedDescription: "Manic EMU runs console, arcade, computer, and mobile Java games on iPhone and iPad through multiple emulator cores, with a game library, custom skins, save states, cheats, shaders, controller support, and RetroAchievements.\n\nThis build is unsigned. AltStore, SideStore, or StikStore signs it with your own certificate on install, so iCloud sync and App Group features are unavailable in this build.\n\nManic EMU does not include ROMs, ISOs, BIOS files, or copyrighted game data. Use legally owned backups, homebrew, and public-domain software only.",
+                  iconURL: $iconURL,
+                  tintColor: $tint,
+                  category: "games",
+                  screenshots: $screenshots,
+                  versions: [
+                    {
+                      version: $version,
+                      buildVersion: $build,
+                      date: $date,
+                      downloadURL: $downloadURL,
+                      size: $size,
+                      minOSVersion: $minIOS
+                    }
+                  ],
+                  appPermissions: {
+                    entitlements: [
+                      {
+                        name: "Increased Memory Limit",
+                        description: "Lets the app use more memory than the default limit, which some emulator cores need."
+                      },
+                      {
+                        name: "Extended Virtual Addressing",
+                        description: "Gives the app a larger virtual address space for emulator cores."
+                      },
+                      {
+                        name: "Sustained Execution",
+                        description: "Keeps the app running in the background during long emulation sessions."
+                      }
+                    ],
+                    privacy: {
+                      NSLocalNetworkUsageDescription: "Find and connect with other devices for online gaming.",
+                      NSBluetoothAlwaysUsageDescription: "Enable communication features for certain games.",
+                      NSCameraUsageDescription: "Capture photos for custom game covers.",
+                      NSMicrophoneUsageDescription: "Full Nintendo DS game functionality.",
+                      NSPhotoLibraryUsageDescription: "Save screenshots and select images for game covers.",
+                      NSPhotoLibraryAddUsageDescription: "Save game screenshots and create custom game covers."
+                    }
+                  }
+                }
+              ]
+            }' > dist/altstore.json
+
+          jq -e '.apps[0].versions[0].downloadURL' dist/altstore.json > /dev/null
+          cat dist/altstore.json
+
+      - name: Write release notes
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          BUILD: ${{ steps.version.outputs.build }}
+          TAG: ${{ steps.version.outputs.tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          cat > dist/RELEASE_NOTES.md <<EOF
+          Unsigned sideload build of Manic EMU $VERSION (build $BUILD), with the SIDE_LOAD compilation conditions enabled.
+
+          ### Install
+
+          Add this AltStore source, then install Manic EMU from it:
+
+          \`\`\`
+          https://github.com/$REPO/releases/latest/download/altstore.json
+          \`\`\`
+
+          The IPA is unsigned, so AltStore, SideStore, or StikStore re-signs it with your own certificate during install. A free Apple ID works. iCloud sync and App Group features are unavailable in sideloaded builds.
+
+          You can also install the IPA directly:
+
+          \`\`\`
+          https://github.com/$REPO/releases/download/$TAG/ManicEMU-$VERSION.ipa
+          \`\`\`
+
+          Manic EMU does not include ROMs, ISOs, BIOS files, or copyrighted game data.
+          EOF
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Manic EMU ${{ steps.version.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          prerelease: ${{ steps.version.outputs.prerelease }}
+          body_path: dist/RELEASE_NOTES.md
+          files: |
+            dist/ManicEMU-${{ steps.version.outputs.version }}.ipa
+            dist/altstore.json
+            dist/icon.png
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
