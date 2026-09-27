@@ -104,28 +104,18 @@ extension String {
         
         // Extract host (Group 3 contains square brackets, the actual host is in Group 4 or 5)
         var host: String?
-        var isIPv6 = false
         if let ipv6Range = Range(match.range(at: 4), in: trimmedInput), !ipv6Range.isEmpty {
-            host = String(trimmedInput[ipv6Range]) // I Pv6 actual content is in Group 4
-            isIPv6 = true
+            host = String(trimmedInput[ipv6Range]) // IPv6 actual content is in Group 4
         } else if let normalHostRange = Range(match.range(at: 5), in: trimmedInput), !normalHostRange.isEmpty {
             host = String(trimmedInput[normalHostRange]) // Ordinary host in group 5
         }
-        
+
+        // Host format is deliberately not validated. Any non-empty host is accepted so that
+        // single-label names (`nas`), custom TLDs (`server.a`) and public addresses all work.
         guard let validHost = host, !validHost.isEmpty else {
             return nil
         }
-        
-        // Strict host verification (keeping the original logic)
-        let adjustedHost = isIPv6 ? validHost : validHost
-        let isDomainValid = NSPredicate(format: "SELF MATCHES %@", #"^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$"#).evaluate(with: adjustedHost)
-        let isIPv4Valid = NSPredicate(format: "SELF MATCHES %@", #"^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$"#).evaluate(with: adjustedHost)
-        let isIPv6Valid = isIPv6 && NSPredicate(format: "SELF MATCHES %@", #"^[0-9a-fA-F:]+$"#).evaluate(with: adjustedHost)
-        
-        guard isIPv6Valid || isIPv4Valid || isDomainValid else {
-            return nil
-        }
-        
+
         // Extract port (Group 6)
         let portString = Range(match.range(at: 6), in: trimmedInput).flatMap { String(trimmedInput[$0]) }
         let port = portString.flatMap { Int($0) }.flatMap { (1...65535).contains($0) ? $0 : nil }
@@ -136,7 +126,7 @@ extension String {
             return str.isEmpty ? nil : str
         }
         
-        return (scheme, adjustedHost, port, path)
+        return (scheme, validHost, port, path)
     }
     
     func calculateWidth(font: UIFont, height: CGFloat) -> CGFloat {
