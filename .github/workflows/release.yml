@@ -42,8 +42,58 @@ jobs:
         with:
           ref: ${{ inputs.tag || github.ref }}
           fetch-depth: 0
-          lfs: true
+          # The LFS payload is ~560 MB. Letting checkout pull it here would re-download
+          # all of it from metered LFS storage on every run, so the objects are restored
+          # from the Actions cache and pulled in the steps below instead.
+          lfs: false
           submodules: recursive
+
+      - name: Compute LFS cache key
+        id: lfs
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          # LFS objects are content addressed, so key the cache on the pointer OIDs: an
+          # unchanged payload is an exact hit, and a changed one still restores the
+          # previous objects and downloads only the difference.
+          key=$(git lfs ls-files -l | awk '{print $1}' | sort | shasum -a 256 | cut -c1-32)
+          echo "key=$key" >> "$GITHUB_OUTPUT"
+          echo "LFS pointers: $(git lfs ls-files -l | wc -l | tr -d ' ') objects, cache key $key"
+
+      - name: Restore LFS cache
+        id: lfs-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .git/lfs/objects
+          key: lfs-v2-${{ runner.os }}-${{ steps.lfs.outputs.key }}
+          restore-keys: |
+            lfs-v2-${{ runner.os }}-
+
+      - name: Pull LFS objects
+        id: lfs-pull
+        run: |
+          set -euo pipefail
+          size() { du -sm .git/lfs/objects 2>/dev/null | cut -f1 || echo 0; }
+          restored=$(size)
+          git lfs pull
+          echo "LFS store: ${restored} MB restored, $(size) MB after pull"
+          if [ "${{ steps.lfs-cache.outputs.cache-hit }}" = "true" ]; then
+            echo "Exact cache hit, nothing downloaded from LFS storage."
+          else
+            echo "Cache miss, only objects missing from the restored cache were downloaded."
+          fi
+
+      - name: Save LFS cache
+        # Requires a successful pull: saving after a failed one would store a partial
+        # object store under a key derived from the full pointer list, and that entry
+        # would then be an exact hit forever, so the cache could never be filled.
+        # A later build failure still saves, which is what always() is for.
+        if: always() && steps.lfs-pull.outcome == 'success' && steps.lfs-cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: .git/lfs/objects
+          key: lfs-v2-${{ runner.os }}-${{ steps.lfs.outputs.key }}
 
       - name: Pull LFS files inside submodules
         run: git submodule foreach --recursive 'git lfs pull || true'
