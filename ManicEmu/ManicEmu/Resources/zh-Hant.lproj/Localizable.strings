@@ -1178,3 +1178,7 @@ PlayCase 專注於高品質 iPhone 保護殼，設計時充分考慮了配件與
 "ClearPlayTime" = "清除遊戲時長";
 "ClearPlayTimeAlert" = "確定清除所有遊戲的時長統計？此操作無法復原。";
 "ClearPlayTimeSuccess" = "遊戲時長已清除";
+"ClearResourcesTitle" = "清空資源";
+"ClearResourcesDesc" = "刪除已解壓的模擬器資源，下次啟動應用程式時會自動重新解壓";
+"ClearResourcesAlert" = "確定清空已解壓的資源？重新啟動應用程式後會重新解壓內建外觀與核心系統檔案。存檔、遊戲、匯入的外觀與設定不受影響。";
+"ClearResourcesDone" = "資源已清空，請重新啟動應用程式以重新解壓";

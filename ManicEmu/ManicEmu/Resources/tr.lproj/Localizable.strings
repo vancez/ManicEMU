@@ -1172,3 +1172,7 @@ Kurulumunuzu bir üst seviyeye taşımak istiyorsanız, PlayCase bu kaplama içi
 "ClearPlayTime" = "Oyun süresini temizle";
 "ClearPlayTimeAlert" = "Tüm oyunların oyun süresi temizlensin mi? Bu işlem geri alınamaz.";
 "ClearPlayTimeSuccess" = "Oyun süresi temizlendi";
+"ClearResourcesTitle" = "Clear Resources";
+"ClearResourcesDesc" = "Deletes the extracted emulator resources. The app extracts them again the next time it launches.";
+"ClearResourcesAlert" = "Clear the extracted resources? Built-in skins and core system files are extracted again after you restart the app. Saves, games, imported skins and settings are not affected.";
+"ClearResourcesDone" = "Resources cleared. Restart the app to extract them again.";

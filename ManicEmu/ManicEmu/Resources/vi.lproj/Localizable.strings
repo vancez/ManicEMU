@@ -1166,3 +1166,7 @@ Nếu bạn muốn nâng cấp thiết lập của mình, PlayCase là sự kế
 "ClearPlayTime" = "Xóa thời gian chơi";
 "ClearPlayTimeAlert" = "Xóa thời gian chơi của tất cả trò chơi? Không thể hoàn tác thao tác này.";
 "ClearPlayTimeSuccess" = "Đã xóa thời gian chơi";
+"ClearResourcesTitle" = "Clear Resources";
+"ClearResourcesDesc" = "Deletes the extracted emulator resources. The app extracts them again the next time it launches.";
+"ClearResourcesAlert" = "Clear the extracted resources? Built-in skins and core system files are extracted again after you restart the app. Saves, games, imported skins and settings are not affected.";
+"ClearResourcesDone" = "Resources cleared. Restart the app to extract them again.";

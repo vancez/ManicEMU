@@ -1206,3 +1206,7 @@ Press the controller button to complete mapping...";
 "ClearPlayTime" = "Clear Play Time";
 "ClearPlayTimeAlert" = "Clear play time for every game? This cannot be undone.";
 "ClearPlayTimeSuccess" = "Play time cleared";
+"ClearResourcesTitle" = "Clear Resources";
+"ClearResourcesDesc" = "Deletes the extracted emulator resources. The app extracts them again the next time it launches.";
+"ClearResourcesAlert" = "Clear the extracted resources? Built-in skins and core system files are extracted again after you restart the app. Saves, games, imported skins and settings are not affected.";
+"ClearResourcesDone" = "Resources cleared. Restart the app to extract them again.";

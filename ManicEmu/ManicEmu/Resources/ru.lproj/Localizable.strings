@@ -1167,3 +1167,7 @@ PlayCase специализируется на высококачественн�
 "ClearPlayTime" = "Очистить время игры";
 "ClearPlayTimeAlert" = "Очистить время игры для всех игр? Это действие нельзя отменить.";
 "ClearPlayTimeSuccess" = "Время игры очищено";
+"ClearResourcesTitle" = "Clear Resources";
+"ClearResourcesDesc" = "Deletes the extracted emulator resources. The app extracts them again the next time it launches.";
+"ClearResourcesAlert" = "Clear the extracted resources? Built-in skins and core system files are extracted again after you restart the app. Saves, games, imported skins and settings are not affected.";
+"ClearResourcesDone" = "Resources cleared. Restart the app to extract them again.";

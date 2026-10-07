@@ -1167,3 +1167,7 @@ Pokud chcete vylepšit své nastavení, PlayCase je perfektním doplňkem tohoto
 "ClearPlayTime" = "Vymazat dobu hraní";
 "ClearPlayTimeAlert" = "Vymazat dobu hraní u všech her? Tuto akci nelze vrátit zpět.";
 "ClearPlayTimeSuccess" = "Doba hraní vymazána";
+"ClearResourcesTitle" = "Clear Resources";
+"ClearResourcesDesc" = "Deletes the extracted emulator resources. The app extracts them again the next time it launches.";
+"ClearResourcesAlert" = "Clear the extracted resources? Built-in skins and core system files are extracted again after you restart the app. Saves, games, imported skins and settings are not affected.";
+"ClearResourcesDone" = "Resources cleared. Restart the app to extract them again.";

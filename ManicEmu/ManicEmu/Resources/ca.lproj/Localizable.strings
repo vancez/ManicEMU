@@ -1174,3 +1174,7 @@ Si voleu millorar la vostra configuració, PlayCase és el complement perfecte p
 "ClearPlayTime" = "Esborra el temps de joc";
 "ClearPlayTimeAlert" = "Voleu esborrar el temps de joc de tots els jocs? Aquesta acció no es pot desfer.";
 "ClearPlayTimeSuccess" = "Temps de joc esborrat";
+"ClearResourcesTitle" = "Clear Resources";
+"ClearResourcesDesc" = "Deletes the extracted emulator resources. The app extracts them again the next time it launches.";
+"ClearResourcesAlert" = "Clear the extracted resources? Built-in skins and core system files are extracted again after you restart the app. Saves, games, imported skins and settings are not affected.";
+"ClearResourcesDone" = "Resources cleared. Restart the app to extract them again.";

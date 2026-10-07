@@ -43,7 +43,8 @@ struct SettingItem {
              coverScraping,
              resetTips,
              playTimeTracking,
-             clearPlayTime
+             clearPlayTime,
+             clearResources
     }
     
     var type: ItemType
@@ -139,7 +140,7 @@ struct SettingItem {
             [R.Color.Orange]
         case .autoSaveState, .rumble, .feedback, .resetTips, .playTimeTracking:
             [R.Color.Green]
-        case .clearPlayTime:
+        case .clearPlayTime, .clearResources:
             [R.Color.Red]
         case .skin, .skinSound, .about:
             [R.Color.Pink]
@@ -226,6 +227,8 @@ struct SettingItem {
             ASIcon.symbol(.clock, colors: iconColors)
         case .clearPlayTime:
             ASIcon.symbol(.trash, colors: iconColors)
+        case .clearResources:
+            ASIcon.symbol(.arrowClockwise, colors: iconColors)
         }
     }
     
@@ -299,6 +302,8 @@ struct SettingItem {
             R.string.localizable.playTimeTracking()
         case .clearPlayTime:
             R.string.localizable.clearPlayTime()
+        case .clearResources:
+            R.string.localizable.clearResourcesTitle()
         }
     }
     
@@ -347,6 +352,8 @@ struct SettingItem {
             return R.string.localizable.resetTipsDesc()
         } else if type == .playTimeTracking {
             return R.string.localizable.playTimeTrackingDesc()
+        } else if type == .clearResources {
+            return R.string.localizable.clearResourcesDesc()
         }
         return nil
     }

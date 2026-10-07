@@ -112,6 +112,7 @@ class SettingsListView: BaseView {
             } else if section == .others {
                 datas[section] = [.init(type: .about),
                                   .init(type: .shareApp),
+                                  .init(type: .clearResources),
                                   .init(type: .clearCache),
                                   .init(type: .resetTips),
                                   .init(type: .language),
@@ -257,6 +258,15 @@ class SettingsListView: BaseView {
         }
         NotificationCenter.default.post(name: R.NotificationName.GameSortChange, object: nil)
         UIView.makeToast(message: R.string.localizable.clearPlayTimeSuccess())
+    }
+
+    ///清空解压出来的资源: 只清版本号, 重启后ResourcesKit会删掉System.bundle重新解压(内置皮肤一并重新生成)。
+    ///这里不直接删目录, 因为运行中的核心还在从System.bundle里读系统文件和数据库。
+    private func clearResources() {
+        UserDefaults.standard.removeObject(forKey: R.DefaultKey.SystemCoreVersion)
+        UserDefaults.standard.removeObject(forKey: R.DefaultKey.SystemCoreBuildVersion)
+        UIView.makeAlert(detail: R.string.localizable.clearResourcesDone(),
+                         cancelTitle: R.string.localizable.confirmTitle())
     }
     
     private func reloadCell(for item: SettingItem) {
@@ -460,6 +470,13 @@ class SettingsListView: BaseView {
                                              confirmTitle: R.string.localizable.clearPlayTime(),
                                              confirmAction: { [weak self] in
                                 self?.clearPlayTime()
+                            })
+
+                        case .clearResources:
+                            UIView.makeAlert(detail: R.string.localizable.clearResourcesAlert(),
+                                             confirmTitle: R.string.localizable.clearResourcesTitle(),
+                                             confirmAction: { [weak self] in
+                                self?.clearResources()
                             })
                             
                         case .respectSilentMode:

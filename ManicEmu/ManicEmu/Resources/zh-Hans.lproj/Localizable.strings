@@ -1201,3 +1201,7 @@
 "ClearPlayTime" = "清除游戏时长";
 "ClearPlayTimeAlert" = "确定清除所有游戏的时长统计？此操作无法撤销。";
 "ClearPlayTimeSuccess" = "游戏时长已清除";
+"ClearResourcesTitle" = "清空资源";
+"ClearResourcesDesc" = "删除已解压的模拟器资源，下次启动应用时自动重新解压";
+"ClearResourcesAlert" = "确定清空已解压的资源？重启应用后会重新解压内置皮肤和核心系统文件。存档、游戏、导入的皮肤和设置不受影响。";
+"ClearResourcesDone" = "资源已清空，请重启应用以重新解压";

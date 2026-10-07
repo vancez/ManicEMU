@@ -1176,3 +1176,7 @@ PlayCase는 액세서리 및 스킨 호환성을 고려하여 제작된 고품�
 "ClearPlayTime" = "플레이 시간 지우기";
 "ClearPlayTimeAlert" = "모든 게임의 플레이 시간을 지울까요? 이 작업은 되돌릴 수 없습니다.";
 "ClearPlayTimeSuccess" = "플레이 시간을 지웠습니다";
+"ClearResourcesTitle" = "Clear Resources";
+"ClearResourcesDesc" = "Deletes the extracted emulator resources. The app extracts them again the next time it launches.";
+"ClearResourcesAlert" = "Clear the extracted resources? Built-in skins and core system files are extracted again after you restart the app. Saves, games, imported skins and settings are not affected.";
+"ClearResourcesDone" = "Resources cleared. Restart the app to extract them again.";
