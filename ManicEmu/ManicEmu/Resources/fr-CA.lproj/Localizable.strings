@@ -525,6 +525,7 @@ Appuyez sur le bouton du contrôleur...";
 "NotAllowOnlineGame" = "Fonction désactivée durant le jeu en ligne";
 
 "SkinIdentifierExist" = "L'identifiant %@ existe déjà. Modifiez-le et réimportez.";
+"SkinPlatformNotSupported" = "Échec de l'importation de %@ : plateforme de skin non prise en charge %@";
 "AnalogModeChange" = "Passer en mode %@";
 "AnalogModeDesc" = "PS1 permet de changer le mode : PlayStation Controller n'a pas de manettes analogiques ; DualShock les supporte. Certains jeux anciens nécessitent la manette d'origine.";
 "DiscInsert" = "Insérer le disque %d";

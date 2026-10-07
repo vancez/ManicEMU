@@ -528,6 +528,7 @@
 "NotAllowOnlineGame" = "線上遊戲期間此功能停用";
 
 "SkinIdentifierExist" = "識別碼:%@ 已存在，請修改後重新匯入。";
+"SkinPlatformNotSupported" = "導入%@失敗：不支援的皮膚平台 %@";
 "AnalogModeChange" = "切換到 %@ 模式";
 "AnalogModeDesc" = "PS1支援控制器模式切換：PlayStation控制器冇搖桿，DualShock支援搖桿。部分早期遊戲需使用原裝控制器。";
 "DiscInsert" = "插入光碟 %d";

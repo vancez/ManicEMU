@@ -525,6 +525,7 @@ Prem el botó del control...";
 "NotAllowOnlineGame" = "Aquesta funció està desactivada en joc online";
 
 "SkinIdentifierExist" = "Identificador %@ ja existeix. Modifiqueu-lo i importeu-lo de nou.";
+"SkinPlatformNotSupported" = "No s'ha pogut importar %@: plataforma d'aparença no compatible %@";
 "AnalogModeChange" = "Canvia al mode %@";
 "AnalogModeDesc" = "PS1 admet canvi de mode: Control PlayStation no té sticks analògics; DualShock sí. Alguns jocs antics requereixen el controlador original.";
 "DiscInsert" = "Inseriu el disc %d";

@@ -524,6 +524,7 @@ Druk op de controllerknop...";
 "NotAllowOnlineGame" = "Deze functie is uitgeschakeld tijdens online spelen";
 
 "SkinIdentifierExist" = "Identifier %@ bestaat al. Wijzig en importeer opnieuw.";
+"SkinPlatformNotSupported" = "Importeren van %@ mislukt: niet-ondersteund skinplatform %@";
 "AnalogModeChange" = "Overschakelen naar %@-modus";
 "AnalogModeDesc" = "PS1 ondersteunt moduswisseling: PlayStation Controller heeft geen analoge sticks; DualShock wel. Sommige vroege games vereisen originele controller.";
 "DiscInsert" = "Schijf %d invoeren";

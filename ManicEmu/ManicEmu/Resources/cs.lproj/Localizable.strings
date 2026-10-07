@@ -519,6 +519,7 @@ Stiskněte tlačítko ovladače...";
 "NotAllowOnlineGame" = "Tato funkce je při online hraní zakázána";
 
 "SkinIdentifierExist" = "Identifikátor %@ již existuje. Upravte a znovu importujte.";
+"SkinPlatformNotSupported" = "Import %@ se nezdařil: nepodporovaná platforma skinu %@";
 "AnalogModeChange" = "Přepnout na režim %@";
 "AnalogModeDesc" = "PS1 podporuje přepínání režimu: PlayStation Controller nemá analogové páčky; DualShock podporuje. Některé rané hry vyžadují originální ovladač.";
 "DiscInsert" = "Vložte disk %d";

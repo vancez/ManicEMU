@@ -527,6 +527,7 @@ Premi il pulsante del controller...";
 "NotAllowOnlineGame" = "Funzione disabilitata durante il gioco online";
 
 "SkinIdentifierExist" = "Identificatore %@ già esistente. Modifica e reimporta.";
+"SkinPlatformNotSupported" = "Importazione di %@ non riuscita: piattaforma skin non supportata %@";
 "AnalogModeChange" = "Passa a modalità %@";
 "AnalogModeDesc" = "PS1 supporta cambio modalità controller: PlayStation Controller non ha analogici; DualShock li supporta. Alcuni giochi antichi richiedono controller originale.";
 "DiscInsert" = "Inserisci disco %d";

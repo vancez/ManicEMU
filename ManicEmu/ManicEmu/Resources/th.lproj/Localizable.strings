@@ -513,6 +513,7 @@
 "NotAllowOnlineGame" = "ปิดใช้งานฟีเจอร์นี้ระหว่างเล่นออนไลน์";
 
 "SkinIdentifierExist" = "ตัวระบุ:%@ มีอยู่แล้ว โปรดแก้ไขแล้วนำเข้าใหม่";
+"SkinPlatformNotSupported" = "นำเข้า %@ ไม่สำเร็จ: ไม่รองรับแพลตฟอร์มสกิน %@";
 "AnalogModeChange" = "เปลี่ยนเป็นโหมด %@";
 "AnalogModeDesc" = "PS1 รองรับการเปลี่ยนโหมด: PlayStation Controller ไม่มีแอนะล็อกสติ๊ก; DualShock รองรับ บางเกมยุคแรกต้องใช้คอนโทรลเลอร์ต้นฉบับ";
 "DiscInsert" = "ใส่ดิสก์ %d";

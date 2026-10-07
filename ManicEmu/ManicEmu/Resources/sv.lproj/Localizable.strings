@@ -517,6 +517,7 @@ Tryck på kontrollknappen...";
 "NotAllowOnlineGame" = "Denna funktion är inaktiverad vid onlinespel";
 
 "SkinIdentifierExist" = "Identifierare %@ finns redan. Ändra och importera igen.";
+"SkinPlatformNotSupported" = "Kunde inte importera %@: skin-plattform stöds inte %@";
 "AnalogModeChange" = "Växla till %@-läge";
 "AnalogModeDesc" = "PS1 stöder kontrolllägesväxling: PlayStation Controller saknar analoga spakar; DualShock stöder. Vissa tidiga spel kräver originalkontroll.";
 "DiscInsert" = "Sätt in skiva %d";

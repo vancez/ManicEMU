@@ -525,6 +525,7 @@ Apasă butonul controlerului...";
 "NotAllowOnlineGame" = "Această funcție este dezactivată în joc online";
 
 "SkinIdentifierExist" = "Identificatorul %@ există deja. Modificați și reimportați.";
+"SkinPlatformNotSupported" = "Importul %@ a eșuat: platformă de skin neacceptată %@";
 "AnalogModeChange" = "Comută la modul %@";
 "AnalogModeDesc" = "PS1 suportă schimbarea modului: PlayStation Controller nu are stick-uri analogice; DualShock are. Unele jocuri timpurii necesită controller original.";
 "DiscInsert" = "Introduceți discul %d";

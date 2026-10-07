@@ -516,6 +516,7 @@ Tekan tombol kontroler...";
 "NotAllowOnlineGame" = "Fitur ini dinonaktifkan saat main online";
 
 "SkinIdentifierExist" = "Pengenal %@ sudah ada. Harap modifikasi dan impor ulang.";
+"SkinPlatformNotSupported" = "Gagal mengimpor %@: platform skin tidak didukung %@";
 "AnalogModeChange" = "Beralih ke mode %@";
 "AnalogModeDesc" = "PS1 dukung pengalihan mode: PlayStation Controller tidak punya analog stick; DualShock dukung. Beberapa game awal butuh controller asli.";
 "DiscInsert" = "Masukkan Disk %d";

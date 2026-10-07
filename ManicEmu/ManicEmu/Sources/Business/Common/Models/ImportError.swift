@@ -26,7 +26,8 @@ enum ImportError: Error, LocalizedError {
     case saveMatchToMuch(gameSaveUrl: URL, games: [Game])
     
     case skinBadFile(fileName: String)
-    
+    case skinPlatformNotSupported(fileName: String, platform: String)
+
     case pasteNoMatchContent
     
     case downloadExist(fileName: String)
@@ -69,6 +70,8 @@ enum ImportError: Error, LocalizedError {
             R.string.localizable.filesImporterErrorSaveMathToMuch(gameSaveUrl.lastPathComponent)
         case .skinBadFile(fileName: let fileName):
             R.string.localizable.filesImporterErrorSkinBadFile(fileName)
+        case .skinPlatformNotSupported(fileName: let fileName, platform: let platform):
+            R.string.localizable.skinPlatformNotSupported(fileName, platform)
         case .pasteNoMatchContent:
             R.string.localizable.pasteImporterErrorNoMatchContent()
         case .downloadExist(fileName: let fileName):

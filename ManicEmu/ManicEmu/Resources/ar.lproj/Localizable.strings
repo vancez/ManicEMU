@@ -498,6 +498,7 @@
 "NotAllowOnlineGame" = "هذه الميزة معطلة أثناء اللعب عبر الإنترنت";
 
 "SkinIdentifierExist" = "%@ المعرف موجود مسبقًا. يرجى التعديل وإعادة الاستيراد.";
+"SkinPlatformNotSupported" = "فشل استيراد %@: منصة السكين %@ غير مدعومة";
 "AnalogModeChange" = "التغيير إلى وضع %@";
 "AnalogModeDesc" = "يدعم PS1 تبديل وضع التحكم: جهاز PlayStation Controller لا يحتوي على عصي تناظرية؛ جهاز DualShock يدعمها. بعض الألعاب القديمة تتطلب جهاز التحكم الأصلي.";
 "DiscInsert" = "أدخل القرص %d";

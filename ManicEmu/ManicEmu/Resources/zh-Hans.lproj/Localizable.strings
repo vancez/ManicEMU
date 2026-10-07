@@ -530,6 +530,7 @@
 "NotAllowOnlineGame" = "此功能在联机模式下禁用";
 
 "SkinIdentifierExist" = "Identifier:%@已存在，请重新修改后再次导入";
+"SkinPlatformNotSupported" = "导入%@失败：不支持的皮肤平台 %@";
 
 "AnalogModeChange" = "使用%@模式";
 "AnalogModeDesc" = "PS1支持手柄模式切换，PlayStation Controller不支持摇杆，DualShock支持摇杆，部分早期发布的游戏需要使用PlayStation Controller才能正常操作";

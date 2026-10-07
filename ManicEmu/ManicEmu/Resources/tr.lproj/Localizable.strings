@@ -523,6 +523,7 @@ Kontrolcü düğmesine basın...";
 "NotAllowOnlineGame" = "Çevrimiçi oyunda bu özellik devre dışı";
 
 "SkinIdentifierExist" = "Tanımlayıcı %@ zaten var. Lütfen değiştirip tekrar içe aktarın.";
+"SkinPlatformNotSupported" = "%@ içe aktarılamadı: skin platformu desteklenmiyor %@";
 "AnalogModeChange" = "%@ Moduna Geç";
 "AnalogModeDesc" = "PS1 mod değiştirmeyi destekler: PlayStation Controller'da analog çubuk yok; DualShock destekler. Bazı eski oyunlar orijinal kontrolcü gerektirir.";
 "DiscInsert" = "Disk %d Tak";

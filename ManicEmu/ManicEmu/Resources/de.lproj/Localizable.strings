@@ -525,6 +525,7 @@ Drücke die Controller-Taste...";
 "NotAllowOnlineGame" = "Diese Funktion ist im Online-Modus deaktiviert";
 
 "SkinIdentifierExist" = "Kennung: %@ existiert bereits. Bitte ändern und erneut importieren.";
+"SkinPlatformNotSupported" = "Import von %@ fehlgeschlagen: Skin-Plattform %@ wird nicht unterstützt";
 "AnalogModeChange" = "Zu %@-Modus wechseln";
 "AnalogModeDesc" = "PS1 unterstützt Controller-Moduswechsel: PlayStation Controller hat keine Analogsticks; DualShock unterstützt sie. Einige frühe Spiele benötigen Original-Controller.";
 "DiscInsert" = "Disc %d einlegen";

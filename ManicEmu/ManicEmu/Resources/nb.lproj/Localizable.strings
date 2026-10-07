@@ -515,6 +515,7 @@ Trykk på kontrollerknappen...";
 "NotAllowOnlineGame" = "Denne funksjonen er deaktivert under online spill";
 
 "SkinIdentifierExist" = "Identifikator %@ finnes allerede. Endre og importer på nytt.";
+"SkinPlatformNotSupported" = "Kunne ikke importere %@: skin-plattform støttes ikke %@";
 "AnalogModeChange" = "Bytt til %@-modus";
 "AnalogModeDesc" = "PS1 støtter kontrollermodusbytte: PlayStation Controller mangler analogspaker; DualShock støtter. Noen tidlige spill krever originalkontroller.";
 "DiscInsert" = "Sett inn disk %d";

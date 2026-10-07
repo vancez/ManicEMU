@@ -523,6 +523,7 @@
 "NotAllowOnlineGame" = "Ova funkcija onemogućena u online igri";
 
 "SkinIdentifierExist" = "Identifikator %@ već postoji. Uredite ga i ponovno uvezite.";
+"SkinPlatformNotSupported" = "Uvoz %@ nije uspio: nepodržana platforma skina %@";
 "AnalogModeChange" = "Prebaci na %@ način";
 "AnalogModeDesc" = "PS1 podržava promjenu načina: PlayStation Controller nema analognih palica; DualShock podržava. Neke rane igre zahtijevaju izvorni kontroler.";
 "DiscInsert" = "Umetni disk %d";

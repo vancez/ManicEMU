@@ -520,6 +520,7 @@
 "NotAllowOnlineGame" = "オンライン中はこの機能を利用できません";
 
 "SkinIdentifierExist" = "識別子: %@ は既に存在します。修正して再インポートしてください。";
+"SkinPlatformNotSupported" = "%@のインポートに失敗: サポートされていないスキンプラットフォーム %@";
 "AnalogModeChange" = "%@モードに切替";
 "AnalogModeDesc" = "PS1はコントローラーモード切替対応：PlayStationコントローラーはアナログスティック非対応、DualShockは対応。初期ゲームでは純正コントローラー必須。";
 "DiscInsert" = "ディスク%dを挿入";

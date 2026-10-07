@@ -527,6 +527,7 @@
 "NotAllowOnlineGame" = "온라인 플레이 중 이 기능 사용 불가";
 
 "SkinIdentifierExist" = "식별자 %@가 이미 존재합니다. 수정 후 다시 가져오세요.";
+"SkinPlatformNotSupported" = "%@ 가져오기 실패: 지원되지 않는 스킨 플랫폼 %@";
 "AnalogModeChange" = "%@ 모드로 전환";
 "AnalogModeDesc" = "PS1 컨트롤러 모드 전환 지원: PlayStation 컨트롤러는 아날로그 스틱 미지원, DualShock은 지원. 일부 초기 게임은 원본 컨트롤러 필요.";
 "DiscInsert" = "디스크 %d 삽입";

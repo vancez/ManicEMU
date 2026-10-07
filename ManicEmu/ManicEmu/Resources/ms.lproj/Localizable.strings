@@ -497,6 +497,7 @@ Tekan butang pengawal...";
 "NotAllowOnlineGame" = "Ciri ini dinyahaktifkan semasa main dalam talian";
 
 "SkinIdentifierExist" = "Pengenal %@ telah wujud. Sila ubah dan import semula.";
+"SkinPlatformNotSupported" = "Import kulit %@ gagal: platform kulit tidak disokong %@";
 "AnalogModeChange" = "Tukar kepada mod %@";
 "AnalogModeDesc" = "PS1 sokong pertukaran mod: PlayStation Controller tiada kayu analog; DualShock sokong. Sesetengah permainan awal perlukan pengawal asal.";
 "DiscInsert" = "Masukkan Cakera %d";

@@ -523,6 +523,7 @@ Presiona el botón del control para continuar...";
 "NotAllowOnlineGame" = "Función deshabilitada durante juego online";
 
 "SkinIdentifierExist" = "El identificador %@ ya existe. Modifícalo e impórtalo nuevamente.";
+"SkinPlatformNotSupported" = "No se pudo importar %@: plataforma de skin no compatible %@";
 "AnalogModeChange" = "Cambiar a modo %@";
 "AnalogModeDesc" = "PS1 permite cambiar modo de control: PlayStation Controller no tiene palancas analógicas; DualShock sí. Algunos juegos antiguos requieren control original.";
 "DiscInsert" = "Insertar disco %d";

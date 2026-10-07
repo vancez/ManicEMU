@@ -525,6 +525,7 @@
 "NotAllowOnlineGame" = "Táto funkcia je v online hre deaktivovaná";
 
 "SkinIdentifierExist" = "Identifikátor %@ už existuje. Upravte a znova importujte.";
+"SkinPlatformNotSupported" = "Import %@ zlyhal: nepodporovaná platforma skinu %@";
 "AnalogModeChange" = "Prepnúť na režim %@";
 "AnalogModeDesc" = "PS1 podporuje prepínanie režimov: PlayStation Controller nemá analógové páčky; DualShock podporuje. Niektoré rané hry vyžadujú originálny ovládač.";
 "DiscInsert" = "Vložte disk %d";

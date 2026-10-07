@@ -498,6 +498,7 @@ Naciśnij przycisk kontrolera...";
 "NotAllowOnlineGame" = "Funkcja wyłączona w trybie online";
 
 "SkinIdentifierExist" = "Identyfikator %@ już istnieje. Zmodyfikuj i zaimportuj ponownie.";
+"SkinPlatformNotSupported" = "Nie udało się zaimportować %@: nieobsługiwana platforma skóry %@";
 "AnalogModeChange" = "Przełącz na tryb %@";
 "AnalogModeDesc" = "PS1 obsługuje zmianę trybu: PlayStation Controller nie ma analogowych drążków; DualShock obsługuje. Niektóre wczesne gry wymagają oryginalnego kontrolera.";
 "DiscInsert" = "Włóż dysk %d";

@@ -517,6 +517,7 @@ Nhấn nút điều khiển...";
 "NotAllowOnlineGame" = "Tính năng này bị vô hiệu hóa khi chơi online";
 
 "SkinIdentifierExist" = "Định danh %@ đã tồn tại. Vui lòng sửa và nhập lại.";
+"SkinPlatformNotSupported" = "Nhập %@ thất bại: nền tảng skin không được hỗ trợ %@";
 "AnalogModeChange" = "Chuyển sang chế độ %@";
 "AnalogModeDesc" = "PS1 hỗ trợ chuyển chế độ: PlayStation Controller không có gậy analog; DualShock hỗ trợ. Một số game cũ yêu cầu tay cầm gốc.";
 "DiscInsert" = "Chèn đĩa %d";

@@ -534,6 +534,7 @@ Press the controller button to complete mapping...";
 "NotAllowOnlineGame" = "This feature is disabled for online play";
 
 "SkinIdentifierExist" = "Identifier: %@ already exists. Please modify and re-import.";
+"SkinPlatformNotSupported" = "Failed to import %@: Unsupported skin platform %@";
 
 "AnalogModeChange" = "Switch to %@ Mode";
 "AnalogModeDesc" = "PS1 supports controller mode switching: PlayStation Controller lacks analog sticks, DualShock supports them. Some early games require the original PlayStation Controller.";

@@ -526,6 +526,7 @@ Paina ohjaimen nappia...";
 "NotAllowOnlineGame" = "Tämä ominaisuus on pois käytöstä online-pelissä";
 
 "SkinIdentifierExist" = "Tunniste %@ on jo olemassa. Muokkaa ja tuo uudelleen.";
+"SkinPlatformNotSupported" = "Kohteen %@ tuonti epäonnistui: skinin alustaa ei tueta %@";
 "AnalogModeChange" = "Vaihda %@-tilaan";
 "AnalogModeDesc" = "PS1 tukee ohjaintilan vaihtoa: PlayStation-ohjaimessa ei ole analogisia tikkejä; DualShock tukee. Jotkut varhaiset pelit vaativat alkuperäistä ohjainta.";
 "DiscInsert" = "Aseta levy %d";

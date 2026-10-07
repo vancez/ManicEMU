@@ -526,6 +526,7 @@
 "NotAllowOnlineGame" = "פיצ'ר זה מושבת במשחק אונליין";
 
 "SkinIdentifierExist" = "המזהה: %@ כבר קיים. נא לערוך ולייבא מחדש.";
+"SkinPlatformNotSupported" = "ייבוא %@ נכשל: פלטפורמת skin לא נתמכת %@";
 "AnalogModeChange" = "החלף למצב %@";
 "AnalogModeDesc" = "PS1 תומך בהחלפת מצב: לשליטה PlayStation אין מקלות אנלוגיים; DualShock תומך. חלק מהמשחקים המוקדמים דורשים שלט מקורי.";
 "DiscInsert" = "הכנס דיסק %d";

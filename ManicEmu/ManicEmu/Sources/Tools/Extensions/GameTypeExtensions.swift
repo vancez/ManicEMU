@@ -844,6 +844,21 @@ extension GameType {
         return false
     }
     
+    ///Whether skins of this platform can be picked in the skin settings page.
+    ///External platforms are excluded from that page, so their skins would never be selectable.
+    var supportsSkins: Bool {
+        if externalType {
+            return false
+        }
+        return System.allGameTypes.contains(self)
+    }
+    
+    ///Platform name for import errors. Unknown platforms have no short name, so show the raw identifier instead.
+    var skinImportDisplayName: String {
+        let shortName = localizedShortName
+        return shortName.isEmpty ? rawValue : shortName
+    }
+    
     var supportShaders: Bool {
         if self == .j2me ||
             self == .flash ||

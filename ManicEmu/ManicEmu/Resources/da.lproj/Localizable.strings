@@ -521,6 +521,7 @@ Tryk på controller-knappen...";
 "NotAllowOnlineGame" = "Denne funktion er deaktiveret under online-spil";
 
 "SkinIdentifierExist" = "Id'et %@ findes allerede. Ret det og importer igen.";
+"SkinPlatformNotSupported" = "Kunne ikke importere %@: skin-platform understøttes ikke %@";
 "AnalogModeChange" = "Skift til %@-tilstand";
 "AnalogModeDesc" = "PS1 understøtter controller-tilstandsskift: PlayStation Controller har ikke analoge sticks; DualShock understøtter. Nogle tidlige spil kræver original controller.";
 "DiscInsert" = "Indsæt disk %d";

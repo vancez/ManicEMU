@@ -525,6 +525,7 @@ Nyomja meg a kontroller gombját...";
 "NotAllowOnlineGame" = "Ez a funkció online játék közben ki van kapcsolva";
 
 "SkinIdentifierExist" = "A(z) %@ azonosító már létezik. Módosítsd és importáld újra.";
+"SkinPlatformNotSupported" = "%@ importálása sikertelen: nem támogatott skin platform %@";
 "AnalogModeChange" = "Váltás %@ módra";
 "AnalogModeDesc" = "PS1 támogatja a módváltást: PlayStation Controller nincs analóg pózna; DualShock támogatja. Néhány korai játékhoz eredeti kontroller kell.";
 "DiscInsert" = "Helyezze be a(z) %d lemezt";

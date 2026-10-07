@@ -871,6 +871,12 @@ extension FilesImporter {
     private static func importSkin(url: URL, completion: ((_ skinName: String?, _ error: ImportError?)->Void)?) {
         DispatchQueue.global().async {
             if let controllerSkin = ControllerSkin(fileURL: url) {
+                //皮肤声明的平台认不出来 或者 无法在皮肤设置页选中 则不导入 否则存下来也永远看不到
+                guard controllerSkin.gameType.supportsSkins else {
+                    completion?(nil, .skinPlatformNotSupported(fileName: url.lastPathComponent,
+                                                               platform: controllerSkin.gameType.skinImportDisplayName))
+                    return
+                }
                 if let hash = FileHashUtil.truncatedHash(url: url) {
                     guard tryBeginProcessing(hash) else {
                         completion?(nil, .fileExist(fileName: url.lastPathComponent))
