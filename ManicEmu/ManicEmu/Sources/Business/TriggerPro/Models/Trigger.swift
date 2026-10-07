@@ -46,9 +46,9 @@ class TriggerItem: Object {
         var sizeRange: (min: Float, max: Float) {
             switch self {
             case .classic:
-                (40, 100)
+                (40, 200)
             case .flat, .custom:
-                (32, 80)
+                (32, 200)
             }
         }
         

@@ -17,11 +17,17 @@ class AddTriggerButtonStyleView: BaseView {
                 titleTextField.isUserInteractionEnabled = (style != .custom)
             }
         }
+        ///预览框的高度, 按钮尺寸可以到200, 超过预览框时按比例缩小显示(只影响预览, 模型里的尺寸不变)
+        static let previewBoxHeight: CGFloat = 120
+        private var previewScale: CGFloat {
+            min(1, Self.previewBoxHeight / max(buttonSize.height, 1))
+        }
         var buttonSize: CGSize = TriggerItem.Style.classic.defaultSize {
             didSet {
-                triggerButton.buttonSize = buttonSize
+                let displaySize = CGSize(width: buttonSize.width * previewScale, height: buttonSize.height * previewScale)
+                triggerButton.buttonSize = displaySize
                 triggerButton.snp.updateConstraints { make in
-                    make.size.equalTo(buttonSize)
+                    make.size.equalTo(displaySize)
                 }
             }
         }
@@ -34,7 +40,7 @@ class AddTriggerButtonStyleView: BaseView {
         var buttonRadius: CGFloat = R.Size.CornerRadiusMedium {
             didSet {
                 guard style == .custom else { return }
-                triggerButton.buttonCornerRadius = buttonRadius
+                triggerButton.buttonCornerRadius = buttonRadius * previewScale
             }
         }
         var buttonText: String = "M" {
@@ -351,7 +357,7 @@ class AddTriggerButtonStyleView: BaseView {
         triggerButtonView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(R.Size.ContentSpaceMedium)
             make.top.equalTo(segmentView.snp.bottom).offset(R.Size.ContentSpaceLarge)
-            make.height.equalTo(120)
+            make.height.equalTo(ButtonView.previewBoxHeight)
         }
         
         addSubview(sizeSliderView)

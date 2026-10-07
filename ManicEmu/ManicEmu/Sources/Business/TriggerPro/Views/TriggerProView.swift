@@ -207,30 +207,30 @@ class TriggerProView: BaseView {
             }
         }
         
-        // 计算总高度
-        let rowHeight = buttons.first?.bounds.height ?? 0
-        let totalHeight = CGFloat(rows.count) * rowHeight + CGFloat(max(0, rows.count - 1)) * spacing
-        
+        // 计算总高度(按钮尺寸可以不一样, 每行的高度取该行最高的按钮)
+        let rowHeights = rows.map { row in row.map({ $0.bounds.height }).max() ?? 0 }
+        let totalHeight = rowHeights.reduce(0, +) + CGFloat(max(0, rows.count - 1)) * spacing
+
         // 计算起始Y坐标（居中）
         var startY = (bounds.height - totalHeight) / 2
-        
+
         // 为每一行的按钮设置位置
-        for row in rows {
+        for (rowIndex, row) in rows.enumerated() {
             // 计算当前行的总宽度
             let rowWidth = row.reduce(0) { $0 + $1.bounds.width } + CGFloat(max(0, row.count - 1)) * spacing
-            
+
             // 计算当前行的起始X坐标（居中）
             var currentX = (bounds.width - rowWidth) / 2
-            
-            // 设置当前行每个按钮的位置
+
+            // 设置当前行每个按钮的位置(高度不一致时在本行内垂直居中)
             for button in row {
                 button.x = currentX
-                button.y = startY
+                button.y = startY + (rowHeights[rowIndex] - button.bounds.height) / 2
                 currentX += button.bounds.width + spacing
             }
             
             // 移动到下一行
-            startY += rowHeight + spacing
+            startY += rowHeights[rowIndex] + spacing
         }
     }
     
