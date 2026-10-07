@@ -115,6 +115,13 @@ struct ResourcesKit {
                     }
                 }
                 
+                //生成EMPTY皮肤(需要读上面生成好的复用皮肤, 并且要在Database.addEmbedSkins之前完成)
+                if isSuccess {
+                    DispatchQueue.global().sync {
+                        generateEmptySkins()
+                    }
+                }
+
                 Log.debug("资源解压结束:\(Date.now.timeIntervalSince1970ms)")
                 completion?(isSuccess)
                 if isSuccess {
@@ -221,5 +228,144 @@ struct ResourcesKit {
         } else {
             completion?(true)
         }
+    }
+
+    //MARK: - EMPTY皮肤
+    ///生成每个平台的EMPTY皮肤: 去掉所有控制按键, 只保留menu(以及DS/3DS的触屏项), 背景纯黑, 供TriggerPro使用。
+    ///和复用皮肤一样在解压资源时生成, 这样不必把几十个二进制的manicskin提交到仓库。
+    private static func generateEmptySkins() {
+        let fileManager = FileManager.default
+        let resourcePath = R.Path.Resource
+        let backgroundName = "EMPTY_Background.pdf"
+        let backgroundURL = URL(fileURLWithPath: resourcePath.appendingPathComponent(backgroundName))
+        guard fileManager.fileExists(atPath: backgroundURL.path) else {
+            Log.debug("[Skin] EMPTY: 缺少\(backgroundName), 跳过生成")
+            return
+        }
+        ///固定时间戳, 让每次生成出来的皮肤文件字节一致(Skin.id是文件hash)
+        let fixedDate = Date(timeIntervalSince1970: 315532800)
+        let keepInputs: Set<String> = ["menu", "touchScreenX", "touchScreenY"]
+        let tempDirectory = URL(fileURLWithPath: R.Path.Temp.appendingPathComponent("EmptySkins"))
+        try? FileManager.safeRemoveItem(at: tempDirectory)
+        try? fileManager.createDirectory(at: tempDirectory, withIntermediateDirectories: true)
+        defer { try? FileManager.safeRemoveItem(at: tempDirectory) }
+
+        var generatedCount = 0
+        for core in System.allCores {
+            let coreName = core.name
+            let baseURL = URL(fileURLWithPath: resourcePath.appendingPathComponent("\(coreName).manicskin"))
+            let destURL = URL(fileURLWithPath: resourcePath.appendingPathComponent("\(coreName)_EMPTY.manicskin"))
+            guard fileManager.fileExists(atPath: baseURL.path) else {
+                Log.debug("[Skin] EMPTY: 缺少\(coreName).manicskin, 跳过")
+                continue
+            }
+
+            do {
+                guard let baseArchive = try? Archive(url: baseURL, accessMode: .read, pathEncoding: nil),
+                      let infoEntry = baseArchive["info.json"] else {
+                    Log.debug("[Skin] EMPTY: 无法读取\(coreName).manicskin")
+                    continue
+                }
+                var infoData = Data()
+                try _ = baseArchive.extract(infoEntry) { infoData.append($0) }
+                guard var info = try JSONSerialization.jsonObject(with: infoData) as? [String: Any],
+                      let gameTypeIdentifier = info["gameTypeIdentifier"] as? String,
+                      let oldName = info["name"] as? String,
+                      let representations = info["representations"] else {
+                    Log.debug("[Skin] EMPTY: \(coreName)的info.json格式不正确")
+                    continue
+                }
+
+                info["identifier"] = gameTypeIdentifier + ".empty"
+                info["name"] = oldName.contains("Standard") ? oldName.replacingOccurrences(of: "Standard", with: "EMPTY") : oldName + " EMPTY"
+                info["debug"] = false
+                var assetNames = Set<String>()
+                info["representations"] = rewriteRepresentations(representations,
+                                                                 keepInputs: keepInputs,
+                                                                 backgroundName: backgroundName,
+                                                                 assetNames: &assetNames,
+                                                                 coreName: coreName)
+
+                //把新的info.json、黑色背景和保留下来的素材放进临时目录
+                let skinTempDirectory = tempDirectory.appendingPathComponent(coreName)
+                try fileManager.createDirectory(at: skinTempDirectory, withIntermediateDirectories: true)
+                try JSONSerialization.data(withJSONObject: info, options: [.sortedKeys])
+                    .write(to: skinTempDirectory.appendingPathComponent("info.json"))
+                try fileManager.copyItem(at: backgroundURL, to: skinTempDirectory.appendingPathComponent(backgroundName))
+                //排序保证写入顺序稳定, 生成的皮肤文件才是字节一致的
+                for assetName in assetNames.sorted() {
+                    guard let assetEntry = baseArchive[assetName] else {
+                        Log.debug("[Skin] EMPTY: \(coreName)缺少素材\(assetName)")
+                        continue
+                    }
+                    var assetData = Data()
+                    try _ = baseArchive.extract(assetEntry) { assetData.append($0) }
+                    try assetData.write(to: skinTempDirectory.appendingPathComponent(assetName))
+                }
+
+                //打包成新的manicskin
+                let files = try fileManager.contentsOfDirectory(at: skinTempDirectory, includingPropertiesForKeys: nil).sorted { $0.lastPathComponent < $1.lastPathComponent }
+                for file in files {
+                    try? fileManager.setAttributes([.modificationDate: fixedDate], ofItemAtPath: file.path)
+                }
+                try? FileManager.safeRemoveItem(at: destURL)
+                do {
+                    let archive = try Archive(url: destURL, accessMode: .create)
+                    for file in files {
+                        try archive.addEntry(with: file.lastPathComponent, fileURL: file)
+                    }
+                }
+                generatedCount += 1
+            } catch {
+                Log.error("[Skin] EMPTY: 生成\(coreName)失败 \(error)")
+            }
+        }
+        Log.debug("[Skin] EMPTY: 共生成\(generatedCount)套皮肤")
+    }
+
+    ///递归改写representations: 只保留menu和触屏项, 背景换成纯黑素材
+    private static func rewriteRepresentations(_ node: Any,
+                                               keepInputs: Set<String>,
+                                               backgroundName: String,
+                                               assetNames: inout Set<String>,
+                                               coreName: String) -> Any {
+        guard var dictionary = node as? [String: Any] else { return node }
+        if dictionary["mappingSize"] != nil || dictionary["screens"] != nil || dictionary["items"] != nil {
+            let items = dictionary["items"] as? [[String: Any]] ?? []
+            var keptItems = items.filter({ item in
+                inputValues(item["inputs"]).contains(where: { keepInputs.contains($0) })
+            })
+            //menu是触屏设备打开游戏内菜单的唯一入口, 没有menu项就保留原始按键, 不能生成不可用的皮肤
+            if !keptItems.contains(where: { inputValues($0["inputs"]).contains("menu") }) {
+                Log.error("[Skin] EMPTY: \(coreName)有representation未找到menu项, 保留原始按键")
+                keptItems = items
+            }
+            for item in keptItems {
+                guard let asset = item["asset"] as? [String: Any] else { continue }
+                for case let name as String in asset.values where !name.isEmpty {
+                    assetNames.insert(name)
+                }
+            }
+            dictionary["items"] = keptItems
+            dictionary["assets"] = ["resizable": backgroundName]
+            return dictionary
+        }
+        var newDictionary = dictionary
+        for (key, value) in dictionary {
+            newDictionary[key] = rewriteRepresentations(value,
+                                                        keepInputs: keepInputs,
+                                                        backgroundName: backgroundName,
+                                                        assetNames: &assetNames,
+                                                        coreName: coreName)
+        }
+        return newDictionary
+    }
+
+    ///skins里inputs有字符串、数组、字典三种写法, 统一取值来判断
+    private static func inputValues(_ inputs: Any?) -> [String] {
+        if let value = inputs as? String { return [value] }
+        if let values = inputs as? [String] { return values }
+        if let values = inputs as? [String: String] { return Array(values.values) }
+        return []
     }
 }

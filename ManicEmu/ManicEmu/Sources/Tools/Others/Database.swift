@@ -128,7 +128,8 @@ struct Database {
                     let oldSkins = allSkins.where({ $0.skinType == .buildIn || $0.skinType == .import })
                     try? realm.write({
                         for oldSkin in oldSkins {
-                            if !oldSkin.isFlexSkin {
+                            //FLEX和EMPTY是随包生成的, 不能被当成用户导入的皮肤(改成import之后可以删除 删掉就不会再补回来)
+                            if !oldSkin.isFlexSkin && !oldSkin.isEmptySkin {
                                 oldSkin.skinType = .import
                             }
                         }

@@ -89,6 +89,11 @@ class Skin: Object, ObjectUpdatable {
     var isFlexSkin: Bool {
         return fileName.contains("_FLEX.manicskin")
     }
+
+    ///生成的EMPTY皮肤(去掉按键 只保留menu 供TriggerPro使用), 和FLEX一样属于随包生成的内置皮肤
+    var isEmptySkin: Bool {
+        return fileName.contains("_EMPTY.manicskin")
+    }
     
     var isEditable: Bool {
         if skinType == .default || isKeyboardSkin {
