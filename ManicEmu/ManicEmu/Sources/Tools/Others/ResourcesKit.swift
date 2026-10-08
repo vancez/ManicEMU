@@ -236,12 +236,6 @@ struct ResourcesKit {
     private static func generateEmptySkins() {
         let fileManager = FileManager.default
         let resourcePath = R.Path.Resource
-        let backgroundName = "EMPTY_Background.pdf"
-        let backgroundURL = URL(fileURLWithPath: resourcePath.appendingPathComponent(backgroundName))
-        guard fileManager.fileExists(atPath: backgroundURL.path) else {
-            Log.debug("[Skin] EMPTY: 缺少\(backgroundName), 跳过生成")
-            return
-        }
         ///固定时间戳, 让每次生成出来的皮肤文件字节一致(Skin.id是文件hash)
         let fixedDate = Date(timeIntervalSince1970: 315532800)
         let keepInputs: Set<String> = ["menu", "touchScreenX", "touchScreenY"]
@@ -280,18 +274,22 @@ struct ResourcesKit {
                 info["name"] = oldName.contains("Standard") ? oldName.replacingOccurrences(of: "Standard", with: "EMPTY") : oldName + " EMPTY"
                 info["debug"] = false
                 var assetNames = Set<String>()
+                var backgrounds = [String: Data]()
                 info["representations"] = rewriteRepresentations(representations,
+                                                                 path: [],
                                                                  keepInputs: keepInputs,
-                                                                 backgroundName: backgroundName,
                                                                  assetNames: &assetNames,
+                                                                 backgrounds: &backgrounds,
                                                                  coreName: coreName)
 
-                //把新的info.json、黑色背景和保留下来的素材放进临时目录
+                //把新的info.json、生成的黑色背景和保留下来的素材放进临时目录
                 let skinTempDirectory = tempDirectory.appendingPathComponent(coreName)
                 try fileManager.createDirectory(at: skinTempDirectory, withIntermediateDirectories: true)
                 try JSONSerialization.data(withJSONObject: info, options: [.sortedKeys])
                     .write(to: skinTempDirectory.appendingPathComponent("info.json"))
-                try fileManager.copyItem(at: backgroundURL, to: skinTempDirectory.appendingPathComponent(backgroundName))
+                for (backgroundName, backgroundData) in backgrounds {
+                    try backgroundData.write(to: skinTempDirectory.appendingPathComponent(backgroundName))
+                }
                 //排序保证写入顺序稳定, 生成的皮肤文件才是字节一致的
                 for assetName in assetNames.sorted() {
                     guard let assetEntry = baseArchive[assetName] else {
@@ -323,11 +321,12 @@ struct ResourcesKit {
         Log.debug("[Skin] EMPTY: 共生成\(generatedCount)套皮肤")
     }
 
-    ///递归改写representations: 只保留menu和触屏项, 背景换成纯黑素材
+    ///递归改写representations: 只保留menu和触屏项, 背景换成一张按屏幕位置挖空的黑色PDF
     private static func rewriteRepresentations(_ node: Any,
+                                               path: [String],
                                                keepInputs: Set<String>,
-                                               backgroundName: String,
                                                assetNames: inout Set<String>,
+                                               backgrounds: inout [String: Data],
                                                coreName: String) -> Any {
         guard var dictionary = node as? [String: Any] else { return node }
         if dictionary["mappingSize"] != nil || dictionary["screens"] != nil || dictionary["items"] != nil {
@@ -347,18 +346,64 @@ struct ResourcesKit {
                 }
             }
             dictionary["items"] = keptItems
-            dictionary["assets"] = ["resizable": backgroundName]
+            //游戏画面是画在皮肤下面的, 所以背景必须在屏幕位置挖空, 否则会把画面盖住。
+            //挖空的位置就是screens里的outputFrame, 坐标系是mappingSize。算不出屏幕位置时保留原有背景。
+            if let mappingSize = size(dictionary["mappingSize"]),
+               let screens = dictionary["screens"] as? [[String: Any]] {
+                let holes = screens.compactMap({ rect($0["outputFrame"]) })
+                let backgroundName = "EMPTY_" + path.joined(separator: "_") + ".pdf"
+                backgrounds[backgroundName] = emptyBackgroundPDF(size: mappingSize, holes: holes)
+                dictionary["assets"] = ["resizable": backgroundName]
+            }
             return dictionary
         }
         var newDictionary = dictionary
         for (key, value) in dictionary {
             newDictionary[key] = rewriteRepresentations(value,
+                                                        path: path + [key],
                                                         keepInputs: keepInputs,
-                                                        backgroundName: backgroundName,
                                                         assetNames: &assetNames,
+                                                        backgrounds: &backgrounds,
                                                         coreName: coreName)
         }
         return newDictionary
+    }
+
+    ///生成EMPTY皮肤的背景: 整页纯黑, 每个屏幕的位置挖空(even-odd填充留出透明区域)。
+    ///这里自己拼PDF而不是用UIGraphicsPDFRenderer, 因为后者会写创建时间和随机ID, 生成的文件字节不稳定(Skin.id是文件hash)。
+    private static func emptyBackgroundPDF(size: CGSize, holes: [CGRect]) -> Data {
+        func value(_ number: CGFloat) -> String {
+            String(Int(number.rounded()))
+        }
+        let width = size.width.rounded()
+        let height = size.height.rounded()
+        var content = "0 0 0 rg\n0 0 \(value(width)) \(value(height)) re\n"
+        for hole in holes {
+            //PDF的原点在左下角, 而屏幕帧的坐标系原点在左上角, 这里要把y翻过来
+            let y = height - (hole.minY + hole.height)
+            content += "\(value(hole.minX)) \(value(y)) \(value(hole.width)) \(value(hole.height)) re\n"
+        }
+        content += "f*\n"
+
+        var data = Data("%PDF-1.4\n".utf8)
+        var offsets = [Int]()
+        func append(_ object: String) {
+            offsets.append(data.count)
+            data.append(Data(object.utf8))
+        }
+        append("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n")
+        append("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n")
+        append("3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 \(value(width)) \(value(height))] /Resources << >> /Contents 4 0 R >>\nendobj\n")
+        append("4 0 obj\n<< /Length \(content.utf8.count) >>\nstream\n\(content)endstream\nendobj\n")
+
+        let xrefOffset = data.count
+        var xref = "xref\n0 5\n0000000000 65535 f \n"
+        for offset in offsets {
+            xref += String(format: "%010d 00000 n \n", offset)
+        }
+        xref += "trailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n\(xrefOffset)\n%%EOF\n"
+        data.append(Data(xref.utf8))
+        return data
     }
 
     ///skins里inputs有字符串、数组、字典三种写法, 统一取值来判断
@@ -367,5 +412,33 @@ struct ResourcesKit {
         if let values = inputs as? [String] { return values }
         if let values = inputs as? [String: String] { return Array(values.values) }
         return []
+    }
+
+    ///JSON里的{width,height}
+    private static func size(_ value: Any?) -> CGSize? {
+        guard let dictionary = value as? [String: Any],
+              let width = number(dictionary["width"]),
+              let height = number(dictionary["height"]),
+              width > 0, height > 0 else { return nil }
+        return CGSize(width: width, height: height)
+    }
+
+    ///JSON里的{x,y,width,height}
+    private static func rect(_ value: Any?) -> CGRect? {
+        guard let dictionary = value as? [String: Any],
+              let x = number(dictionary["x"]),
+              let y = number(dictionary["y"]),
+              let width = number(dictionary["width"]),
+              let height = number(dictionary["height"]),
+              width > 0, height > 0 else { return nil }
+        return CGRect(x: x, y: y, width: width, height: height)
+    }
+
+    private static func number(_ value: Any?) -> CGFloat? {
+        if let value = value as? CGFloat { return value }
+        if let value = value as? Double { return value }
+        if let value = value as? Int { return CGFloat(value) }
+        if let value = value as? NSNumber { return CGFloat(value.doubleValue) }
+        return nil
     }
 }
