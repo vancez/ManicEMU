@@ -107,7 +107,7 @@ class Skin: Object, ObjectUpdatable {
     }
     
     var supportShortcut: Bool {
-        skinType == .default || isKeyboardSkin || identifier == R.Strings.WiimoteSkinIdentifier 
+        skinType == .default || isEmptySkin || isKeyboardSkin || identifier == R.Strings.WiimoteSkinIdentifier
     }
     
     /// Drop stale `.buildIn` rows iCloud restored after a bundle skin file (hash PK) changed.

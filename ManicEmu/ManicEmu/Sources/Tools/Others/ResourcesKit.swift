@@ -231,7 +231,8 @@ struct ResourcesKit {
     }
 
     //MARK: - EMPTY皮肤
-    ///生成每个平台的EMPTY皮肤: 去掉所有控制按键, 只保留menu(以及DS/3DS的触屏项), 背景纯黑, 供TriggerPro使用。
+    ///生成每个平台的EMPTY皮肤: 外观和默认皮肤完全一样(自带背景图 + 所有按键的图), 但只有menu和触屏是能用的,
+    ///供TriggerPro使用——TriggerPro自己画按钮, 底下的原生按键只要好看, 不要抢输入。
     ///和复用皮肤一样在解压资源时生成, 这样不必把几十个二进制的manicskin提交到仓库。
     private static func generateEmptySkins() {
         let fileManager = FileManager.default
@@ -274,22 +275,16 @@ struct ResourcesKit {
                 info["name"] = oldName.contains("Standard") ? oldName.replacingOccurrences(of: "Standard", with: "EMPTY") : oldName + " EMPTY"
                 info["debug"] = false
                 var assetNames = Set<String>()
-                var backgrounds = [String: Data]()
                 info["representations"] = rewriteRepresentations(representations,
-                                                                 path: [],
                                                                  keepInputs: keepInputs,
                                                                  assetNames: &assetNames,
-                                                                 backgrounds: &backgrounds,
                                                                  coreName: coreName)
 
-                //把新的info.json、生成的黑色背景和保留下来的素材放进临时目录
+                //把新的info.json和用到的素材放进临时目录
                 let skinTempDirectory = tempDirectory.appendingPathComponent(coreName)
                 try fileManager.createDirectory(at: skinTempDirectory, withIntermediateDirectories: true)
                 try JSONSerialization.data(withJSONObject: info, options: [.sortedKeys])
                     .write(to: skinTempDirectory.appendingPathComponent("info.json"))
-                for (backgroundName, backgroundData) in backgrounds {
-                    try backgroundData.write(to: skinTempDirectory.appendingPathComponent(backgroundName))
-                }
                 //排序保证写入顺序稳定, 生成的皮肤文件才是字节一致的
                 for assetName in assetNames.sorted() {
                     guard let assetEntry = baseArchive[assetName] else {
@@ -321,89 +316,62 @@ struct ResourcesKit {
         Log.debug("[Skin] EMPTY: 共生成\(generatedCount)套皮肤")
     }
 
-    ///递归改写representations: 只保留menu和触屏项, 背景换成一张按屏幕位置挖空的黑色PDF
+    ///递归改写representations: 按键全部保留(外观照旧), 但menu和触屏之外都不再派发输入; 背景沿用平台自己的图
     private static func rewriteRepresentations(_ node: Any,
-                                               path: [String],
                                                keepInputs: Set<String>,
                                                assetNames: inout Set<String>,
-                                               backgrounds: inout [String: Data],
                                                coreName: String) -> Any {
         guard var dictionary = node as? [String: Any] else { return node }
         if dictionary["mappingSize"] != nil || dictionary["screens"] != nil || dictionary["items"] != nil {
             let items = dictionary["items"] as? [[String: Any]] ?? []
-            var keptItems = items.filter({ item in
-                inputValues(item["inputs"]).contains(where: { keepInputs.contains($0) })
-            })
-            //menu是触屏设备打开游戏内菜单的唯一入口, 没有menu项就保留原始按键, 不能生成不可用的皮肤
-            if !keptItems.contains(where: { inputValues($0["inputs"]).contains("menu") }) {
-                Log.error("[Skin] EMPTY: \(coreName)有representation未找到menu项, 保留原始按键")
-                keptItems = items
+            var newItems = [[String: Any]]()
+            var hasMenu = false
+            for var item in items {
+                let inputs = inputValues(item["inputs"])
+                if inputs.contains("menu") {
+                    hasMenu = true
+                } else if !inputs.contains(where: { keepInputs.contains($0) }) {
+                    //保留按键的外观, 但让它按下去什么也不触发
+                    item["inputs"] = neutralInputs(item["inputs"])
+                }
+                if let asset = item["asset"] as? [String: Any] {
+                    for case let name as String in asset.values where !name.isEmpty {
+                        assetNames.insert(name)
+                    }
+                }
+                newItems.append(item)
             }
-            for item in keptItems {
-                guard let asset = item["asset"] as? [String: Any] else { continue }
-                for case let name as String in asset.values where !name.isEmpty {
+            //menu是触屏设备打开游戏内菜单的唯一入口, 没有menu项就保留原始按键, 不能生成不可用的皮肤
+            if !hasMenu {
+                Log.error("[Skin] EMPTY: \(coreName)有representation未找到menu项, 保留原始按键")
+                newItems = items
+            }
+            dictionary["items"] = newItems
+            //背景不改写: 平台自己的背景图在画面位置本来就是透明的, 游戏才能透出来
+            if let assets = dictionary["assets"] as? [String: Any] {
+                for case let name as String in assets.values where !name.isEmpty {
                     assetNames.insert(name)
                 }
-            }
-            dictionary["items"] = keptItems
-            //游戏画面是画在皮肤下面的, 所以背景必须在屏幕位置挖空, 否则会把画面盖住。
-            //挖空的位置就是screens里的outputFrame, 坐标系是mappingSize。算不出屏幕位置时保留原有背景。
-            if let mappingSize = size(dictionary["mappingSize"]),
-               let screens = dictionary["screens"] as? [[String: Any]] {
-                let holes = screens.compactMap({ rect($0["outputFrame"]) })
-                let backgroundName = "EMPTY_" + path.joined(separator: "_") + ".pdf"
-                backgrounds[backgroundName] = emptyBackgroundPDF(size: mappingSize, holes: holes)
-                dictionary["assets"] = ["resizable": backgroundName]
             }
             return dictionary
         }
         var newDictionary = dictionary
         for (key, value) in dictionary {
             newDictionary[key] = rewriteRepresentations(value,
-                                                        path: path + [key],
                                                         keepInputs: keepInputs,
                                                         assetNames: &assetNames,
-                                                        backgrounds: &backgrounds,
                                                         coreName: coreName)
         }
         return newDictionary
     }
 
-    ///生成EMPTY皮肤的背景: 整页纯黑, 每个屏幕的位置挖空(even-odd填充留出透明区域)。
-    ///这里自己拼PDF而不是用UIGraphicsPDFRenderer, 因为后者会写创建时间和随机ID, 生成的文件字节不稳定(Skin.id是文件hash)。
-    private static func emptyBackgroundPDF(size: CGSize, holes: [CGRect]) -> Data {
-        func value(_ number: CGFloat) -> String {
-            String(Int(number.rounded()))
-        }
-        let width = size.width.rounded()
-        let height = size.height.rounded()
-        var content = "0 0 0 rg\n0 0 \(value(width)) \(value(height)) re\n"
-        for hole in holes {
-            //PDF的原点在左下角, 而屏幕帧的坐标系原点在左上角, 这里要把y翻过来
-            let y = height - (hole.minY + hole.height)
-            content += "\(value(hole.minX)) \(value(y)) \(value(hole.width)) \(value(hole.height)) re\n"
-        }
-        content += "f*\n"
-
-        var data = Data("%PDF-1.4\n".utf8)
-        var offsets = [Int]()
-        func append(_ object: String) {
-            offsets.append(data.count)
-            data.append(Data(object.utf8))
-        }
-        append("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n")
-        append("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n")
-        append("3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 \(value(width)) \(value(height))] /Resources << >> /Contents 4 0 R >>\nendobj\n")
-        append("4 0 obj\n<< /Length \(content.utf8.count) >>\nstream\n\(content)endstream\nendobj\n")
-
-        let xrefOffset = data.count
-        var xref = "xref\n0 5\n0000000000 65535 f \n"
-        for offset in offsets {
-            xref += String(format: "%010d 00000 n \n", offset)
-        }
-        xref += "trailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n\(xrefOffset)\n%%EOF\n"
-        data.append(Data(xref.utf8))
-        return data
+    ///把按键改成"只有外观没有功能"。按钮直接清空inputs; 方向键/摇杆/开关要保留inputs的结构(否则解析不出kind, 图就不会画),
+    ///所以换成没有对应功能的占位输入, 派发出去没人响应。
+    private static func neutralInputs(_ inputs: Any?) -> Any {
+        if inputs is String { return "none" }
+        if inputs is [String] { return [String]() }
+        if let values = inputs as? [String: String] { return values.mapValues({ _ in "none" }) }
+        return [String]()
     }
 
     ///skins里inputs有字符串、数组、字典三种写法, 统一取值来判断
@@ -412,33 +380,5 @@ struct ResourcesKit {
         if let values = inputs as? [String] { return values }
         if let values = inputs as? [String: String] { return Array(values.values) }
         return []
-    }
-
-    ///JSON里的{width,height}
-    private static func size(_ value: Any?) -> CGSize? {
-        guard let dictionary = value as? [String: Any],
-              let width = number(dictionary["width"]),
-              let height = number(dictionary["height"]),
-              width > 0, height > 0 else { return nil }
-        return CGSize(width: width, height: height)
-    }
-
-    ///JSON里的{x,y,width,height}
-    private static func rect(_ value: Any?) -> CGRect? {
-        guard let dictionary = value as? [String: Any],
-              let x = number(dictionary["x"]),
-              let y = number(dictionary["y"]),
-              let width = number(dictionary["width"]),
-              let height = number(dictionary["height"]),
-              width > 0, height > 0 else { return nil }
-        return CGRect(x: x, y: y, width: width, height: height)
-    }
-
-    private static func number(_ value: Any?) -> CGFloat? {
-        if let value = value as? CGFloat { return value }
-        if let value = value as? Double { return value }
-        if let value = value as? Int { return CGFloat(value) }
-        if let value = value as? NSNumber { return CGFloat(value.doubleValue) }
-        return nil
     }
 }
