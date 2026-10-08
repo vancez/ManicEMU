@@ -101,8 +101,12 @@ jobs:
       - name: Check toolchain
         run: |
           set -euo pipefail
-          xcodebuild -version
-          major=$(xcodebuild -version | head -1 | sed -E 's/^Xcode ([0-9]+).*/\1/')
+          # xcodebuild raises NSFileHandleOperationException instead of dying on
+          # SIGPIPE, so it must not write into a reader that exits early: capture
+          # its output once instead of piping it through head.
+          version_output=$(xcodebuild -version)
+          printf '%s\n' "$version_output"
+          major=$(printf '%s\n' "$version_output" | sed -nE '1s/^Xcode ([0-9]+).*/\1/p')
           if [ "${major:-0}" -lt 26 ]; then
             echo "::error::Xcode 26 or newer is required, found Xcode $major. Pick a newer runner image."
             exit 1
