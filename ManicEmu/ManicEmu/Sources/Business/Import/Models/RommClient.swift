@@ -320,6 +320,22 @@ final class RommClient {
                                            .init(name: "platform_id", value: "\(platformID)")])
     }
 
+    /// One page of a platform listing, optionally filtered by search term.
+    func romPage(platformID: Int, searchTerm: String?, offset: Int, limit: Int) async throws -> RommPage<RommRom> {
+        // platform_ids and platform_id is kept for backward compatibility with old RomM versions
+        var query: [URLQueryItem] = [
+            .init(name: "platform_ids", value: "\(platformID)"),
+            .init(name: "platform_id", value: "\(platformID)"),
+            .init(name: "limit", value: "\(limit)"),
+            .init(name: "offset", value: "\(offset)")
+        ]
+        let term = searchTerm?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if !term.isEmpty {
+            query.append(.init(name: "search_term", value: term))
+        }
+        return try await get(RomApiStub, query: query)
+    }
+
     func rom(id: Int) async throws -> RommRom {
         guard let req = request(path: "\(RomApiStub)/\(id)") else {
             throw URLError(.badURL)

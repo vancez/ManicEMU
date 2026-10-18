@@ -19,6 +19,16 @@ class FileBrowserView: BaseView {
     private let browserType: BrowserType
     //cloud drive
     private var provider: CloudServiceProvider? = nil
+
+    //RomM paged browsing
+    private static let rommPageSize = 100
+    private var rommPlatformID: Int?
+    private var rommOffset = 0
+    private var rommTotal: Int?
+    private var rommIsLoadingMore = false
+    private var rommSearchTerm = ""
+    private var rommSearchGeneration = 0
+    private var rommSearchWorkItem: DispatchWorkItem?
     
     //local
     private var baseUrl: URL? = nil
@@ -94,7 +104,56 @@ class FileBrowserView: BaseView {
             guard let self else { return }
             self.handleAction(action)
         }
+        view.didScroll = { [weak self] scrollView in
+            self?.handleScroll(scrollView)
+        }
         return view
+    }()
+
+    private lazy var rommSearchField: UITextField = {
+        let textField = UITextField()
+        textField.attributedPlaceholder = NSAttributedString(string: R.string.localizable.gamesSearchPlaceHolder(),
+                                                             attributes: [.foregroundColor: R.Color.LabelSecondary,
+                                                                          .font: R.Font.Footnote()])
+        textField.textColor = R.Color.LabelPrimary
+        textField.font = R.Font.Footnote()
+        textField.returnKeyType = .search
+        textField.clearButtonMode = .never
+        textField.modifyClearButton(with: UIImage(symbol: .xmarkCircleFill, color: R.Color.LabelSecondary), size: 28)
+        textField.delegate = self
+        textField.addTarget(self, action: #selector(rommSearchTextChanged(_:)), for: .editingChanged)
+        textField.addTarget(self, action: #selector(rommSearchReturnPressed(_:)), for: .editingDidEndOnExit)
+        return textField
+    }()
+
+    private lazy var rommSearchBarView: UIView = {
+        let wrapper = UIView()
+
+        let container = UIView()
+        container.backgroundColor = R.Color.BackgroundSecondary
+        container.layer.cornerRadius = R.Size.CornerRadiusSmall
+
+        let icon = UIImageView(image: UIImage(symbol: .magnifyingglass, color: R.Color.LabelSecondary))
+        container.addSubview(icon)
+        container.addSubview(rommSearchField)
+
+        icon.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(R.Size.ContentSpaceSmall)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(CGSize(width: 16, height: 16))
+        }
+        rommSearchField.snp.makeConstraints { make in
+            make.leading.equalTo(icon.snp.trailing).offset(R.Size.ContentSpaceTiny)
+            make.trailing.equalToSuperview().offset(-R.Size.ContentSpaceSmall)
+            make.top.bottom.equalToSuperview()
+        }
+
+        wrapper.addSubview(container)
+        container.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(R.Size.ContentSpaceMedium)
+            make.top.bottom.equalToSuperview().inset(6)
+        }
+        return wrapper
     }()
     
     deinit {
@@ -160,6 +219,17 @@ class FileBrowserView: BaseView {
     
     private func loadFiles(page: CloudItem) {
         guard let provider else { return }
+        if let rommProvider = provider as? RommServiceProvider,
+           page.path != "/",
+           let platformID = Int(page.id) {
+            loadRommPlatform(page: page, provider: rommProvider, platformID: platformID)
+            return
+        }
+        if provider is RommServiceProvider, page.path == "/" {
+            resetRommPaging(platformID: nil)
+            rommSearchTerm = ""
+            listPageView.top = nil
+        }
         UIView.makeLoading()
         provider.contentsOfDirectory(page, completion: { [weak self] result in
             UIView.hideLoading()
@@ -168,14 +238,165 @@ class FileBrowserView: BaseView {
             case .success(let items):
                 self.pages.append((page, items))
                 self.listPageView.collectionView.scrollToTop()
-                
+
             case .failure(let error):
                 Log.debug("applySnapshot error:\(error)")
                 UIView.makeToast(message: error.localizedDescription)
             }
         })
     }
-    
+
+    // MARK: - RomM paged browsing
+
+    private func loadRommPlatform(page: CloudItem, provider: RommServiceProvider, platformID: Int) {
+        resetRommPaging(platformID: platformID)
+        rommSearchTerm = ""
+        rommSearchField.text = ""
+        rommIsLoadingMore = true
+        let generation = rommSearchGeneration
+        UIView.makeLoading()
+        Swift.Task { @MainActor in
+            do {
+                let result = try await provider.romPage(platformID: platformID,
+                                                        searchTerm: nil,
+                                                        offset: 0,
+                                                        limit: Self.rommPageSize)
+                guard generation == self.rommSearchGeneration else {
+                    UIView.hideLoading()
+                    return
+                }
+                UIView.hideLoading()
+                self.rommIsLoadingMore = false
+                self.rommOffset = result.items.count
+                self.rommTotal = result.total
+                self.installRommSearchBar()
+                self.pages.append((page, result.items))
+                self.listPageView.collectionView.scrollToTop()
+            } catch {
+                guard generation == self.rommSearchGeneration else {
+                    UIView.hideLoading()
+                    return
+                }
+                UIView.hideLoading()
+                self.rommIsLoadingMore = false
+                Log.debug("[RomM] load platform \(platformID) failed: \(error)")
+                UIView.makeToast(message: error.localizedDescription)
+            }
+        }
+    }
+
+    private func resetRommPaging(platformID: Int?) {
+        rommSearchWorkItem?.cancel()
+        rommSearchWorkItem = nil
+        rommSearchGeneration += 1
+        rommPlatformID = platformID
+        rommOffset = 0
+        rommTotal = nil
+        rommIsLoadingMore = false
+    }
+
+    private func installRommSearchBar() {
+        listPageView.top = (rommSearchBarView, .fixedHeight(R.Size.ButtonLarge + 12), true)
+    }
+
+    @objc private func rommSearchTextChanged(_ textField: UITextField) {
+        rommSearchWorkItem?.cancel()
+        let term = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self, self.rommPlatformID != nil else { return }
+            if self.isEditMode {
+                // The result set is replaced; stale selection indices must not survive.
+                self.isEditMode = false
+            }
+            self.rommSearchTerm = term
+            self.reloadRommSearchResults()
+        }
+        rommSearchWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: workItem)
+    }
+
+    @objc private func rommSearchReturnPressed(_ textField: UITextField) {
+        textField.resignFirstResponder()
+    }
+
+    private func reloadRommSearchResults() {
+        guard let provider = provider as? RommServiceProvider,
+              let platformID = rommPlatformID,
+              pages.count > 1 else { return }
+        rommSearchGeneration += 1
+        let generation = rommSearchGeneration
+        let term = rommSearchTerm
+        rommIsLoadingMore = true
+        Swift.Task { @MainActor in
+            do {
+                let result = try await provider.romPage(platformID: platformID,
+                                                        searchTerm: term,
+                                                        offset: 0,
+                                                        limit: Self.rommPageSize)
+                guard generation == self.rommSearchGeneration else { return }
+                self.rommIsLoadingMore = false
+                if self.isEditMode {
+                    self.isEditMode = false
+                }
+                self.pages[self.pages.count - 1].items = result.items
+                self.rommOffset = result.items.count
+                self.rommTotal = result.total
+                self.listPageView.collectionView.scrollToTop()
+            } catch {
+                guard generation == self.rommSearchGeneration else { return }
+                self.rommIsLoadingMore = false
+                Log.debug("[RomM] search '\(term)' failed: \(error)")
+                UIView.makeToast(message: error.localizedDescription)
+            }
+        }
+    }
+
+    private func loadNextRommPage() {
+        guard let provider = provider as? RommServiceProvider,
+              let platformID = rommPlatformID,
+              pages.count > 1,
+              !rommIsLoadingMore else { return }
+        if let total = rommTotal, rommOffset >= total { return }
+        let generation = rommSearchGeneration
+        let term = rommSearchTerm
+        let offset = rommOffset
+        rommIsLoadingMore = true
+        Swift.Task { @MainActor in
+            do {
+                let result = try await provider.romPage(platformID: platformID,
+                                                        searchTerm: term,
+                                                        offset: offset,
+                                                        limit: Self.rommPageSize)
+                guard generation == self.rommSearchGeneration else { return }
+                self.rommIsLoadingMore = false
+                guard !result.items.isEmpty else {
+                    self.rommTotal = self.rommOffset
+                    return
+                }
+                self.pages[self.pages.count - 1].items.append(contentsOf: result.items)
+                self.rommOffset += result.items.count
+                self.rommTotal = result.total ?? self.rommTotal
+            } catch {
+                guard generation == self.rommSearchGeneration else { return }
+                self.rommIsLoadingMore = false
+                Log.debug("[RomM] load more platform \(platformID) offset \(offset) failed: \(error)")
+            }
+        }
+    }
+
+    private func handleScroll(_ scrollView: UIScrollView) {
+        guard rommPlatformID != nil, !isEditMode, !rommIsLoadingMore else { return }
+        if rommSearchField.isFirstResponder {
+            rommSearchField.resignFirstResponder()
+        }
+        let remaining = scrollView.contentSize.height
+            + scrollView.adjustedContentInset.bottom
+            - scrollView.contentOffset.y
+            - scrollView.bounds.height
+        guard remaining < 320 else { return }
+        loadNextRommPage()
+    }
+
     private func loadFiles(url: URL) {
         if let contents = try? FileManager.default.contentsOfDirectory(at: url,
                                                                        includingPropertiesForKeys: [.isDirectoryKey]) {
@@ -213,6 +434,13 @@ class FileBrowserView: BaseView {
                 //leave edit mode
                 isEditMode = false
             } else if navigationValue.isTapTitle {
+                if provider is RommServiceProvider {
+                    resetRommPaging(platformID: nil)
+                    rommSearchTerm = ""
+                    rommSearchField.text = ""
+                    rommSearchField.resignFirstResponder()
+                    listPageView.top = nil
+                }
                 pages.removeLast()
             }
         } else if let _ = action.toolValue {
@@ -279,7 +507,7 @@ class FileBrowserView: BaseView {
             switch browserType {
             case .cloudDrive:
                 if let page = currentPage?.page as? CloudItem {
-                    title = page.path
+                    title = provider is RommServiceProvider ? page.name : page.path
                 }
                 
             case .local:
@@ -543,11 +771,17 @@ extension FileBrowserView: ShowableView {
             Self.show(parameters: provider)
         }
     }
-    
+
     static func show(url: URL) {
         guard url.isFileURL else { return }
         let homePath = R.Path.Document.deletingLastPathComponent
         Self.show(parameters: URL(fileURLWithPath: url.path.replacingOccurrences(of: homePath, with: ""),
                                   relativeTo: URL(fileURLWithPath: homePath)))
+    }
+}
+
+extension FileBrowserView: UITextFieldDelegate {
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        true
     }
 }

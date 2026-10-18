@@ -35,6 +35,11 @@ class RommServiceProvider: CloudServiceProvider {
         CloudItem(id: name, name: name, path: "/", isDirectory: true)
     }
 
+    struct RommDirectoryPage {
+        let items: [CloudItem]
+        let total: Int?
+    }
+
     required init(credential: URLCredential?) {
         fatalError("Use init(service:)")
     }
@@ -47,6 +52,28 @@ class RommServiceProvider: CloudServiceProvider {
                                  user: service.user,
                                  password: service.password,
                                  path: service.path)
+    }
+
+    private func makeCloudItem(for rom: RommRom) -> CloudItem {
+        let item = CloudItem(id: "\(rom.id)/\(rom.fs_name)",
+                             name: rom.fs_name,
+                             path: romContentPath(romID: rom.id, fileName: rom.fs_name),
+                             isDirectory: false,
+                             json: [Self.displayNameKey: rom.name ?? ""])
+        item.size = rom.fs_size_bytes ?? 0
+        return item
+    }
+
+    /// One page of ROMs for lazy loading and search in the file browser.
+    func romPage(platformID: Int, searchTerm: String?, offset: Int, limit: Int) async throws -> RommDirectoryPage {
+        guard let client else {
+            throw ImportError.lanServiceInitFailed(serviceName: name)
+        }
+        let page = try await client.romPage(platformID: platformID,
+                                            searchTerm: searchTerm,
+                                            offset: offset,
+                                            limit: limit)
+        return RommDirectoryPage(items: page.items.map { makeCloudItem(for: $0) }, total: page.total)
     }
 
     func contentsOfDirectory(_ directory: CloudServiceKit.CloudItem,
@@ -68,13 +95,7 @@ class RommServiceProvider: CloudServiceProvider {
                 } else {
                     let platformID = Int(directory.id) ?? 0
                     items = try await client.roms(platformID: platformID).map { rom in
-                        let item = CloudItem(id: "\(rom.id)/\(rom.fs_name)",
-                                             name: rom.fs_name,
-                                             path: romContentPath(romID: rom.id, fileName: rom.fs_name),
-                                             isDirectory: false,
-                                             json: [Self.displayNameKey: rom.name ?? ""])
-                        item.size = rom.fs_size_bytes ?? 0
-                        return item
+                        makeCloudItem(for: rom)
                     }
                 }
                 await MainActor.run { completion(.success(items)) }
