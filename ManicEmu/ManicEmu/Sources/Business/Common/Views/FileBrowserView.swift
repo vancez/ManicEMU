@@ -219,13 +219,18 @@ class FileBrowserView: BaseView {
             //download
             switch browserType {
             case .cloudDrive:
-                downloadFiles(items: selectedPageItems)
-                
+                if provider is RommServiceProvider,
+                   selectedPageItems.contains(where: { !$0.isDirectory }) {
+                    presentRommDownloadOptions()
+                } else {
+                    downloadFiles(items: selectedPageItems)
+                }
+
             case .local:
                 break
             }
-            
-            
+
+
         } else if let index = action.normalItemValue?.indexPath.section {
             if isEditMode {
                 if selectedItems.contains(index) {
@@ -306,27 +311,41 @@ class FileBrowserView: BaseView {
         for (index, item) in currentPageItems.enumerated() {
             let dateString = "\(item.modificationDate?.dateTimeString(ofStyle: .short) ?? "")"
             let sizeString = FileType.humanReadableFileSize(item.size > 0 ? UInt64(item.size) : 0) ?? ""
-            let detail = dateString + (!dateString.isEmpty && !sizeString.isEmpty ? "   " : "") + sizeString
+            let rommDisplayName = (item.json[RommServiceProvider.displayNameKey] as? String)?
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            let showsRommDisplayName = !(rommDisplayName ?? "").isEmpty && rommDisplayName != item.name
+            let title = showsRommDisplayName ? (rommDisplayName ?? item.name) : item.name
+            var detailComponents = [String]()
+            if showsRommDisplayName {
+                detailComponents.append(item.name)
+            }
+            if !dateString.isEmpty {
+                detailComponents.append(dateString)
+            }
+            if !sizeString.isEmpty {
+                detailComponents.append(sizeString)
+            }
+            let detail = detailComponents.joined(separator: "   ")
             if isEditMode {
                 if item.isDirectory {
                     cells.append(.iconTitleDetailCell(icon: .image(R.image.file_browser_folder()),
-                                                      title: item.name,
+                                                      title: title,
                                                       detail: detail,
                                                       enablePressEffect: false))
                 } else {
                     cells.append(.iconTitleDetailCheckCell(icon: .image(R.image.file_browser_document()),
-                                                           title: item.name,
+                                                           title: title,
                                                            detail: detail,
                                                            isSelected: selectedItems.contains(index)))
                 }
             } else {
                 if item.isDirectory {
                     cells.append(.iconTitleDetailChevronCell(icon: .image(R.image.file_browser_folder()),
-                                                             title: item.name,
+                                                             title: title,
                                                              detail: detail))
                 } else {
                     cells.append(.iconTitleDetailCell(icon: .image(R.image.file_browser_document()),
-                                                      title: item.name,
+                                                      title: title,
                                                       detail: detail,
                                                       enablePressEffect: false))
                 }
@@ -362,7 +381,30 @@ class FileBrowserView: BaseView {
         listPageView.tool = getToolView()
     }
     
-    private func downloadFiles(items: [CloudItem]) {
+    private func presentRommDownloadOptions() {
+        ChevronSheetView.show(icon: .symbol(.arrowDownToLine),
+                              title: R.string.localizable.rommDownloadOptionsTitle(),
+                              detail: R.string.localizable.rommDownloadOptionsDetail(),
+                              cellOptions: [
+                                .iconTitleChevronCell(icon: .symbol(.arrowDownToLine),
+                                                      title: R.string.localizable.rommDownloadAndLink()),
+                                .iconTitleChevronCell(icon: .image(R.image.file_browser_document()),
+                                                      title: R.string.localizable.rommDownloadOnly())
+                              ],
+                              completion: { [weak self] index in
+            guard let self else { return }
+            switch index {
+            case 0:
+                self.downloadFiles(items: self.selectedPageItems, bindToRomm: true)
+            case 1:
+                self.downloadFiles(items: self.selectedPageItems, bindToRomm: false)
+            default:
+                break
+            }
+        })
+    }
+
+    private func downloadFiles(items: [CloudItem], bindToRomm: Bool = true) {
         guard !items.isEmpty else { return }
         
         if let provider = provider as? SMBServiceProvider {
@@ -453,13 +495,18 @@ class FileBrowserView: BaseView {
                     let request = provider.downloadableRequest(of: item)
                     if let url = request?.url {
                         downloadItems[item.name] = url
-                        if let romId = Int(item.id.split(separator: "/").first.map(String.init) ?? "") {
-                            Log.debug("[RomM] download queue file=\(item.name) romId=\(romId) serviceId=\(provider.serviceId) url=\(url.absoluteString)")
-                            RommLibrary.shared.registerDownloadedRom(fileName: item.name,
-                                                                    romId: romId,
-                                                                    serviceId: provider.serviceId)
+                        if bindToRomm {
+                            if let romId = Int(item.id.split(separator: "/").first.map(String.init) ?? "") {
+                                Log.debug("[RomM] download queue file=\(item.name) romId=\(romId) serviceId=\(provider.serviceId) url=\(url.absoluteString)")
+                                RommLibrary.shared.registerDownloadedRom(fileName: item.name,
+                                                                        romId: romId,
+                                                                        serviceId: provider.serviceId)
+                            } else {
+                                Log.debug("[RomM] download queue skipped: cannot parse romId from item.id=\(item.id)")
+                            }
                         } else {
-                            Log.debug("[RomM] download queue skipped: cannot parse romId from item.id=\(item.id)")
+                            RommLibrary.shared.discardPendingLink(fileName: item.name)
+                            Log.debug("[RomM] download queue file=\(item.name) serviceId=\(provider.serviceId) download-only; no RomM link registered url=\(url.absoluteString)")
                         }
                     }
                     headers = request?.allHTTPHeaderFields

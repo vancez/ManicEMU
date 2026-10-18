@@ -20,6 +20,9 @@ class RommServiceProvider: CloudServiceProvider {
 
     let serviceId: String
 
+    /// Display-only metadata carried in `CloudItem.json`; `CloudItem.name` must stay the real file name.
+    static let displayNameKey = "rommDisplayName"
+
     private let romContentPathTemplate = "/api/roms/{romID}/content/{fileName}"
 
     private func romContentPath(romID: Int, fileName: String) -> String {
@@ -68,7 +71,8 @@ class RommServiceProvider: CloudServiceProvider {
                         let item = CloudItem(id: "\(rom.id)/\(rom.fs_name)",
                                              name: rom.fs_name,
                                              path: romContentPath(romID: rom.id, fileName: rom.fs_name),
-                                             isDirectory: false)
+                                             isDirectory: false,
+                                             json: [Self.displayNameKey: rom.name ?? ""])
                         item.size = rom.fs_size_bytes ?? 0
                         return item
                     }
