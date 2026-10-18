@@ -733,10 +733,14 @@ class GameListLandscapeView: BaseView {
         infoPanelView.isHidden = false
         
         titleLabel.title = game.displayName
-        if let timeAgo = game.latestPlayDate?.timeAgo() {
-            subTitleLabel.title = R.string.localizable.readyGameInfoSubTitle(timeAgo, Date.timeDuration(milliseconds: Int(game.totalPlayDuration)))
-        } else {
-            subTitleLabel.title = R.string.localizable.readyGameInfoNeverPlayed()
+        //关闭记录游戏时长后不展示游玩时长信息
+        subTitleLabel.isHidden = !Settings.isPlayTimeTrackingEnabled
+        if Settings.isPlayTimeTrackingEnabled {
+            if let timeAgo = game.latestPlayDate?.timeAgo() {
+                subTitleLabel.title = R.string.localizable.readyGameInfoSubTitle(timeAgo, Date.timeDuration(milliseconds: Int(game.totalPlayDuration)))
+            } else {
+                subTitleLabel.title = R.string.localizable.readyGameInfoNeverPlayed()
+            }
         }
         
         if shouldApplyBackgroundForCurrentPage {

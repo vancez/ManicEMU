@@ -132,10 +132,16 @@ class GameInfoDetailView: BaseView {
             make.leading.equalTo(subtitleIcon.snp.trailing).offset(R.Size.ContentSpaceTiny)
             make.trailing.equalToSuperview()
         }
-        if let timeAgo = game.latestPlayDate?.timeAgo() {
-            subtitleLabel.text = R.string.localizable.readyGameInfoSubTitle(timeAgo, Date.timeDuration(milliseconds: Int(game.totalPlayDuration)))
+        //关闭记录游戏时长后不展示游玩时长信息
+        if Settings.isPlayTimeTrackingEnabled {
+            if let timeAgo = game.latestPlayDate?.timeAgo() {
+                subtitleLabel.text = R.string.localizable.readyGameInfoSubTitle(timeAgo, Date.timeDuration(milliseconds: Int(game.totalPlayDuration)))
+            } else {
+                subtitleLabel.text = R.string.localizable.readyGameInfoNeverPlayed()
+            }
         } else {
-            subtitleLabel.text = R.string.localizable.readyGameInfoNeverPlayed()
+            subtitleIcon.isHidden = true
+            subtitleLabel.isHidden = true
         }
         
         addSubview(startGameButton)

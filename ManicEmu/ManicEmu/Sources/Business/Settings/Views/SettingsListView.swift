@@ -254,6 +254,7 @@ class SettingsListView: BaseView {
                 guard !game.isDeleted else { return }
                 game.totalPlayDuration = 0
                 game.latestPlayDuration = 0
+                game.latestPlayDate = nil
             }
         }
         NotificationCenter.default.post(name: R.NotificationName.GameSortChange, object: nil)
