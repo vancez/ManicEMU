@@ -866,6 +866,7 @@ Pokud chcete vylepšit své nastavení, PlayCase je perfektním doplňkem tohoto
 "FastForward" = "Rychloposuv";
 "Haptics" = "Vibrace";
 "Orientation" = "Orientace";
+"SwitchOrientation" = "Přepnout orientaci";
 "Resolution" = "Rozlišení";
 "LoadSaveStateFailed" = "Uložení stavu nebylo nalezeno.";
 "Play" = "Hrát";

@@ -872,6 +872,7 @@ Wenn Sie Ihr Setup verbessern möchten, ist PlayCase die perfekte Ergänzung zu 
 "FastForward" = "Vorspulen";
 "Haptics" = "Haptik";
 "Orientation" = "Ausrichtung";
+"SwitchOrientation" = "Ausrichtung wechseln";
 "Resolution" = "Auflösung";
 "LoadSaveStateFailed" = "Kein Savestate gefunden.";
 "Play" = "Spielen";

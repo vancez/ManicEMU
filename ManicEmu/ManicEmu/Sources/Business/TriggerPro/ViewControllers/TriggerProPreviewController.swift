@@ -55,10 +55,10 @@ class TriggerProPreviewController: BaseViewController {
         view.didTapTools = { [weak self] _ in
             guard let self else { return }
             //more
-            ChevronSheetView.show(stringOptions: [
-                R.string.localizable.switchPreviewSkin(),
-                R.string.localizable.hideControlsTitle(),
-                R.string.localizable.enableTriggerPro()
+            ChevronSheetView.show(cellOptions: [
+                .iconTitleChevronCell(title: R.string.localizable.switchPreviewSkin()),
+                .iconTitleChevronCell(title: R.string.localizable.hideControlsTitle()),
+                .iconTitleChevronCell(title: R.string.localizable.switchOrientation())
             ], completion: { [weak self] index in
                 guard let self, let index else { return }
                 if index == 0 {
@@ -76,7 +76,7 @@ class TriggerProPreviewController: BaseViewController {
                     //hide controls
                     self.hideControls = true
                 } else if index == 2 {
-                    //portrait/landscape enable
+                    //portrait/landscape selection
                     self.showOrientationSettings()
                 }
             })
@@ -334,7 +334,7 @@ class TriggerProPreviewController: BaseViewController {
     
     private func showOrientationSettings() {
         ChevronSheetView.show(icon: .symbolImage(R.image.triggerpro_iconSymbols()),
-                              title: R.string.localizable.enableTriggerPro(),
+                              title: R.string.localizable.orientation(),
                               cellOptions: [
                                 .iconTitleDetailRadioCell(title: R.string.localizable.skinSegmentPortraitTitle(),
                                                           isSelected: trigger.enabledOrientation == .portrait),

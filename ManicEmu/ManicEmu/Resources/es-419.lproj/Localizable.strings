@@ -871,6 +871,7 @@ Si quieres mejorar tu experiencia, PlayCase combina perfecto con esta funda.";
 "FastForward" = "Avance rápido";
 "Haptics" = "Háptica";
 "Orientation" = "Orientación";
+"SwitchOrientation" = "Cambiar orientación";
 "Resolution" = "Resolución";
 "LoadSaveStateFailed" = "No se encontró ningún estado de guardado.";
 "Play" = "Jugar";

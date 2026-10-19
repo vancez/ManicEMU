@@ -844,6 +844,7 @@
 "FastForward" = "تسريع";
 "Haptics" = "الاهتزاز";
 "Orientation" = "اتجاه الشاشة";
+"SwitchOrientation" = "تبديل الاتجاه";
 "Resolution" = "الدقة";
 "LoadSaveStateFailed" = "لم يتم العثور على حفظ فوري.";
 "Play" = "العب";

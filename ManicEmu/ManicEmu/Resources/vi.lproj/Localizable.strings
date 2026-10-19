@@ -865,6 +865,7 @@ Nếu bạn muốn nâng cấp thiết lập của mình, PlayCase là sự kế
 "FastForward" = "Tua nhanh";
 "Haptics" = "Rung";
 "Orientation" = "Hướng màn hình";
+"SwitchOrientation" = "Đổi hướng";
 "Resolution" = "Độ phân giải";
 "LoadSaveStateFailed" = "Không tìm thấy lưu trữ tức thời.";
 "Play" = "Chơi";

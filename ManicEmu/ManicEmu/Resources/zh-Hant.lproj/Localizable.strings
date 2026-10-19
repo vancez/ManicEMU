@@ -877,6 +877,7 @@ PlayCase 專注於高品質 iPhone 保護殼，設計時充分考慮了配件與
 "FastForward" = "加速";
 "Haptics" = "觸覺回饋";
 "Orientation" = "螢幕方向";
+"SwitchOrientation" = "切換方向";
 "Resolution" = "解析度";
 "LoadSaveStateFailed" = "未找到即時存檔";
 "Play" = "開始";

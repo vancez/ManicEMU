@@ -873,6 +873,7 @@ PlayCase हाई-क्वालिटी iPhone केसों पर के
 "FastForward" = "फास्ट-फॉरवर्ड";
 "Haptics" = "हैप्टिक";
 "Orientation" = "ओरिएंटेशन";
+"SwitchOrientation" = "अभिविन्यास बदलें";
 "Resolution" = "रिज़ॉल्यूशन";
 "LoadSaveStateFailed" = "कोई सेव स्टेट नहीं मिला।";
 "Play" = "खेलें";

@@ -874,6 +874,7 @@ Jos haluat parantaa kokoonpanoasi, PlayCase on täydellinen lisä tälle skinill
 "FastForward" = "Nopeutus";
 "Haptics" = "Haptinen palaute";
 "Orientation" = "Suunta";
+"SwitchOrientation" = "Vaihda suunta";
 "Resolution" = "Resoluutio";
 "LoadSaveStateFailed" = "Pikatallennusta ei löytynyt.";
 "Play" = "Pelaa";

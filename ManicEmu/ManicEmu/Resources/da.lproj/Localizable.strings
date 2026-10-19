@@ -869,6 +869,7 @@ Hvis du vil forbedre dit setup, er PlayCase et perfekt match til dette skin.";
 "FastForward" = "Spol frem";
 "Haptics" = "Haptik";
 "Orientation" = "Orientering";
+"SwitchOrientation" = "Skift orientering";
 "Resolution" = "Opløsning";
 "LoadSaveStateFailed" = "Ingen savestate fundet.";
 "Play" = "Spil";

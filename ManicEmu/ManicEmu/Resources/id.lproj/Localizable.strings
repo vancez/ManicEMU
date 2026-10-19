@@ -864,6 +864,7 @@ Jika Anda ingin meningkatkan setup Anda, PlayCase adalah pasangan sempurna untuk
 "FastForward" = "Maju Cepat";
 "Haptics" = "Getar";
 "Orientation" = "Orientasi";
+"SwitchOrientation" = "Ganti orientasi";
 "Resolution" = "Resolusi";
 "LoadSaveStateFailed" = "Simpanan instan tidak ditemukan.";
 "Play" = "Main";

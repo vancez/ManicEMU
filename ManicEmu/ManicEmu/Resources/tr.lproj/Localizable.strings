@@ -871,6 +871,7 @@ Kurulumunuzu bir üst seviyeye taşımak istiyorsanız, PlayCase bu kaplama içi
 "FastForward" = "Hızlı İleri";
 "Haptics" = "Titreşim";
 "Orientation" = "Yön";
+"SwitchOrientation" = "Yönü değiştir";
 "Resolution" = "Çözünürlük";
 "LoadSaveStateFailed" = "Anlık kayıt bulunamadı.";
 "Play" = "Oyna";

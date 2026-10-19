@@ -866,6 +866,7 @@ PlayCase специализируется на высококачественн�
 "FastForward" = "Ускорение";
 "Haptics" = "Вибрация";
 "Orientation" = "Ориентация";
+"SwitchOrientation" = "Сменить ориентацию";
 "Resolution" = "Разрешение";
 "LoadSaveStateFailed" = "Сейв-стейт не найден.";
 "Play" = "Играть";

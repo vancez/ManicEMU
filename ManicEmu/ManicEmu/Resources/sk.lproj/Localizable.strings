@@ -872,6 +872,7 @@ Ak chcete vylepšiť svoje nastavenie, PlayCase je perfektným doplnkom tohto sk
 "FastForward" = "Rýchly posun";
 "Haptics" = "Vibrácie";
 "Orientation" = "Orientácia";
+"SwitchOrientation" = "Prepnúť orientáciu";
 "Resolution" = "Rozlíšenie";
 "LoadSaveStateFailed" = "Okamžité uloženie sa nenašlo.";
 "Play" = "Hrať";

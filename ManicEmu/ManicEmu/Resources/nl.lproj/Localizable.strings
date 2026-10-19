@@ -872,6 +872,7 @@ Als je je setup naar een hoger niveau wilt tillen, is PlayCase de perfecte match
 "FastForward" = "Versnellen";
 "Haptics" = "Haptiek";
 "Orientation" = "Oriëntatie";
+"SwitchOrientation" = "Oriëntatie wijzigen";
 "Resolution" = "Resolutie";
 "LoadSaveStateFailed" = "Geen savestate gevonden.";
 "Play" = "Spelen";

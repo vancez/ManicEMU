@@ -883,6 +883,7 @@
 "FastForward" = "加速";
 "Haptics" = "震感";
 "Orientation" = "屏幕方向";
+"SwitchOrientation" = "切换方向";
 "Resolution" = "分辨率";
 "LoadSaveStateFailed" = "未找到即时存档";
 "Play" = "开始";

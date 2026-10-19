@@ -861,6 +861,7 @@ PlayCase มุ่งเน้นที่เคส iPhone คุณภาพส
 "FastForward" = "เร่งความเร็ว";
 "Haptics" = "การสั่น";
 "Orientation" = "ทิศหน้าจอ";
+"SwitchOrientation" = "สลับทิศทาง";
 "Resolution" = "ความละเอียด";
 "LoadSaveStateFailed" = "ไม่พบเซฟทันที";
 "Play" = "เล่น";

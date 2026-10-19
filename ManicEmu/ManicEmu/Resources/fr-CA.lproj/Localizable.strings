@@ -872,6 +872,7 @@ Si vous voulez améliorer votre installation, PlayCase est le complément parfai
 "FastForward" = "Avance rapide";
 "Haptics" = "Retour haptique";
 "Orientation" = "Orientation";
+"SwitchOrientation" = "Changer l’orientation";
 "Resolution" = "Résolution";
 "LoadSaveStateFailed" = "Aucune sauvegarde instantanée trouvée.";
 "Play" = "Jouer";

@@ -873,6 +873,7 @@ Si voleu millorar la vostra configuració, PlayCase és el complement perfecte p
 "FastForward" = "Avanç ràpid";
 "Haptics" = "Vibració";
 "Orientation" = "Orientació";
+"SwitchOrientation" = "Canvia l'orientació";
 "Resolution" = "Resolució";
 "LoadSaveStateFailed" = "No s'ha trobat cap partida desada.";
 "Play" = "Juga";

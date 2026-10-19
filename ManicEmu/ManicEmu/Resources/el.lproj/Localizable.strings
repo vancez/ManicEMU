@@ -874,6 +874,7 @@
 "FastForward" = "Γρήγορη Προώθηση";
 "Haptics" = "Δόνηση";
 "Orientation" = "Προσανατολισμός";
+"SwitchOrientation" = "Αλλαγή προσανατολισμού";
 "Resolution" = "Ανάλυση";
 "LoadSaveStateFailed" = "Δεν βρέθηκε αποθηκευμένη κατάσταση.";
 "Play" = "Παίξε";

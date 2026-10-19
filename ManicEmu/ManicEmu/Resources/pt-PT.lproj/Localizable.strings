@@ -873,6 +873,7 @@ Se pretende melhorar a sua configuração, a PlayCase é o complemento perfeito 
 "FastForward" = "Avanço rápido";
 "Haptics" = "Feedback tátil";
 "Orientation" = "Orientação";
+"SwitchOrientation" = "Alterar orientação";
 "Resolution" = "Resolução";
 "LoadSaveStateFailed" = "Nenhum save state encontrado.";
 "Play" = "Jogar";

@@ -845,6 +845,7 @@ Jika anda ingin meningkatkan persediaan anda, PlayCase adalah padanan sempurna u
 "FastForward" = "Maju Laju";
 "Haptics" = "Getaran";
 "Orientation" = "Orientasi";
+"SwitchOrientation" = "Tukar orientasi";
 "Resolution" = "Resolusi";
 "LoadSaveStateFailed" = "Simpanan segera tidak dijumpai.";
 "Play" = "Main";

@@ -889,6 +889,7 @@ Press the controller button to complete mapping...";
 "FastForward" = "Fast Forward";
 "Haptics" = "Haptics";
 "Orientation" = "Orientation";
+"SwitchOrientation" = "Switch Orientation";
 "Resolution" = "Resolution";
 "LoadSaveStateFailed" = "No save state found.";
 "Play" = "Play";

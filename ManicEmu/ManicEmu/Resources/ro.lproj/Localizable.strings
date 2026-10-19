@@ -872,6 +872,7 @@ Dacă vrei să îți îmbunătățești setup-ul, PlayCase este potrivirea perfe
 "FastForward" = "Derulare rapidă";
 "Haptics" = "Feedback tactil";
 "Orientation" = "Orientare";
+"SwitchOrientation" = "Schimbă orientarea";
 "Resolution" = "Rezoluție";
 "LoadSaveStateFailed" = "Nu s-a găsit nicio salvare instant.";
 "Play" = "Joacă";

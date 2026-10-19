@@ -872,6 +872,7 @@ Ha fejleszteni szeretnéd a beállításod, a PlayCase tökéletes kiegészítő
 "FastForward" = "Előretekerés";
 "Haptics" = "Vibráció";
 "Orientation" = "Tájolás";
+"SwitchOrientation" = "Tájolás váltása";
 "Resolution" = "Felbontás";
 "LoadSaveStateFailed" = "Nem található azonnali mentés.";
 "Play" = "Játék";

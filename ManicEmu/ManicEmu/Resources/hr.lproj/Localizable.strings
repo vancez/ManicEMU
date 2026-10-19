@@ -871,6 +871,7 @@ Ako želite unaprijediti svoju postavu, PlayCase je savršen dodatak ovom skinu.
 "FastForward" = "Ubrzavanje";
 "Haptics" = "Vibracije";
 "Orientation" = "Orijentacija";
+"SwitchOrientation" = "Promijeni orijentaciju";
 "Resolution" = "Rezolucija";
 "LoadSaveStateFailed" = "Save state nije pronađen.";
 "Play" = "Igraj";

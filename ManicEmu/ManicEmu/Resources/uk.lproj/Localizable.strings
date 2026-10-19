@@ -872,6 +872,7 @@ PlayCase спеціалізується на високоякісних чохл
 "FastForward" = "Пришвидшення";
 "Haptics" = "Вібрація";
 "Orientation" = "Орієнтація";
+"SwitchOrientation" = "Змінити орієнтацію";
 "Resolution" = "Роздільна здатність";
 "LoadSaveStateFailed" = "Швидке збереження не знайдено.";
 "Play" = "Грати";

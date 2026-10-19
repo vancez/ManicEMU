@@ -865,6 +865,7 @@ Om du vill höja din upplevelse är PlayCase en perfekt match för detta skin.";
 "FastForward" = "Snabbspola";
 "Haptics" = "Haptik";
 "Orientation" = "Orientering";
+"SwitchOrientation" = "Byt orientering";
 "Resolution" = "Upplösning";
 "LoadSaveStateFailed" = "Ingen snabbsparning hittades.";
 "Play" = "Spela";

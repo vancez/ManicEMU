@@ -874,6 +874,7 @@ PlayCase מתמקדת במעטפות iPhone איכותיות, המיוצרות �
 "FastForward" = "האצה";
 "Haptics" = "משוב רטט";
 "Orientation" = "כיוון";
+"SwitchOrientation" = "החלפת כיוון";
 "Resolution" = "רזולוציה";
 "LoadSaveStateFailed" = "לא נמצאה שמירה מיידית.";
 "Play" = "שחק";

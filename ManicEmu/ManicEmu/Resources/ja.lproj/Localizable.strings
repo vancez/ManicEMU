@@ -867,6 +867,7 @@ PlayCaseは、アクセサリーやスキンとの互換性を考慮して作ら
 "FastForward" = "早送り";
 "Haptics" = "触覚";
 "Orientation" = "画面の向き";
+"SwitchOrientation" = "向きを切り替え";
 "Resolution" = "解像度";
 "LoadSaveStateFailed" = "セーブステートが見つかりません。";
 "Play" = "プレイ";

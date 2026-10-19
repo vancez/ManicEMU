@@ -863,6 +863,7 @@ Hvis du vil forbedre oppsettet ditt, er PlayCase et perfekt tilbehør til dette 
 "FastForward" = "Spol frem";
 "Haptics" = "Haptikk";
 "Orientation" = "Orientering";
+"SwitchOrientation" = "Bytt retning";
 "Resolution" = "Oppløsning";
 "LoadSaveStateFailed" = "Ingen savestate funnet.";
 "Play" = "Spill";
