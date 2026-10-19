@@ -980,6 +980,10 @@ class PlayViewController: GameViewController {
             self.updateMotionRotation()
             self.updateSkin()
             self.view.setNeedsLayout()
+            //启用状态按屏幕方向判断
+            if let triggerProView = self.triggerProView {
+                triggerProView.isHidden = !triggerProView.isEnabledInCurrentOrientation
+            }
             self.resumeEmulationAndHandleAudio()
             if self.manicGame.isLibretroType {
                 self.updateFastforward(speed: self.manicGame.speed)
@@ -4103,18 +4107,23 @@ extension PlayViewController {
            id != -1 {
             let realm = Database.realm
             if let trigger = realm.objects(Trigger.self).where({ $0.id == id }).first {
-                triggerProUpdateToken = trigger.observe(keyPaths: [\Trigger.items]) { [weak self] change in
+                triggerProUpdateToken = trigger.observe(keyPaths: [\Trigger.items,
+                                                                  \Trigger.extras]) { [weak self] change in
                     guard let self = self else { return }
                     switch change {
                     case .change(_, _):
                         Log.debug("TriggerPro更新")
+                        if let triggerProView = self.triggerProView {
+                            triggerProView.isHidden = !triggerProView.isEnabledInCurrentOrientation
+                        }
                         self.triggerProView?.reloadButtons()
                     default:
                         break
                     }
                 }
-                
+
                 let aView = TriggerProView(trigger: trigger)
+                aView.isHidden = !aView.isEnabledInCurrentOrientation
                 aView.hapticType = manicGame.haptic
                 aView.activateHandler = { [weak self] inputs in
                     guard let self else { return }
@@ -4142,7 +4151,11 @@ extension PlayViewController {
                 }
                 triggerProView = aView
                 if showToast {
-                    UIView.makeToast(message: R.string.localizable.enableTriggerPro() + ": \(trigger.triggerProName)")
+                    if aView.isEnabledInCurrentOrientation {
+                        UIView.makeToast(message: R.string.localizable.enableTriggerPro() + ": \(trigger.triggerProName)")
+                    } else {
+                        UIView.makeToast(message: R.string.localizable.disableTriggerPro())
+                    }
                 }
                 return
             }

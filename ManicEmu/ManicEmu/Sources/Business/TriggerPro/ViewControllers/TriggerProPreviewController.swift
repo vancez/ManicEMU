@@ -57,7 +57,8 @@ class TriggerProPreviewController: BaseViewController {
             //more
             ChevronSheetView.show(stringOptions: [
                 R.string.localizable.switchPreviewSkin(),
-                R.string.localizable.hideControlsTitle()
+                R.string.localizable.hideControlsTitle(),
+                R.string.localizable.enableTriggerPro()
             ], completion: { [weak self] index in
                 guard let self, let index else { return }
                 if index == 0 {
@@ -70,10 +71,13 @@ class TriggerProPreviewController: BaseViewController {
                         self.skin = self.supportSkins[skinIndex]
                         self.hideControls = false
                     })
-                    
+
                 } else if index == 1 {
                     //hide controls
                     self.hideControls = true
+                } else if index == 2 {
+                    //portrait/landscape enable
+                    self.showOrientationSettings()
                 }
             })
         }
@@ -328,6 +332,20 @@ class TriggerProPreviewController: BaseViewController {
         AppDelegate.orientation = R.Config.DefaultOrientation
     }
     
+    private func showOrientationSettings() {
+        ChevronSheetView.show(icon: .symbolImage(R.image.triggerpro_iconSymbols()),
+                              title: R.string.localizable.enableTriggerPro(),
+                              cellOptions: [
+                                .iconTitleDetailRadioCell(title: R.string.localizable.skinSegmentPortraitTitle(),
+                                                          isSelected: trigger.enabledOrientation == .portrait),
+                                .iconTitleDetailRadioCell(title: R.string.localizable.skinSegmentLandscapeTitle(),
+                                                          isSelected: trigger.enabledOrientation == .landscape)
+                              ], completion: { [weak self] index in
+            guard let self, let index else { return }
+            self.trigger.enabledOrientation = index == 0 ? .portrait : .landscape
+        })
+    }
+
     private func getInputs() -> [String] {
         if let inputs = defaultSkin.gameType.manicEmuCore?.allInputs {
             return inputs.compactMap({ ($0.stringValue == "flex" || $0.stringValue.contains("touchScreen")) ? nil : $0.stringValue })

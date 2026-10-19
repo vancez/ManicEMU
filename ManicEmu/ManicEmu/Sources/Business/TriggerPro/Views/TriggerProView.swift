@@ -9,6 +9,11 @@
 import Haptica
 
 class TriggerProView: BaseView {
+    ///当前屏幕方向是否启用该TriggerPro（游戏中根据此值显示或隐藏）
+    var isEnabledInCurrentOrientation: Bool {
+        trigger.isEnabled(isLandscape: UIDevice.isLandscape)
+    }
+
     var hapticType: GameOption.HapticType = .soft {
         didSet {
             isHapticEnabled = true
@@ -126,17 +131,17 @@ class TriggerProView: BaseView {
             layoutButtonsInCenter(buttonsWithoutPosition)
         }
     }
-    
+
     func reloadButtons() {
         // 取消所有正在进行的动作
         cancelAllActions()
-        
+
         self.subviews.forEach({ $0.removeFromSuperview() })
         buttonItemMap.removeAll()
         buttonStates.removeAll()
         buttonConfigMap.removeAll()
         buttonsWithoutPosition.removeAll()
-        
+
         // 第一遍：创建所有按钮，有坐标的直接设置位置
         for item in trigger.items {
             var image: UIImage? = nil

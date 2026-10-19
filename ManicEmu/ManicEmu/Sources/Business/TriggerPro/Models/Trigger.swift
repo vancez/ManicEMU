@@ -255,7 +255,24 @@ class Trigger: Object, ObjectUpdatable {
     @Persisted var name: String?
     ///items
     @Persisted var items: List<TriggerItem>
-    
+
+    enum Orientation: Int {
+        case portrait, landscape
+    }
+    ///启用方向 默认竖屏
+    var enabledOrientation: Orientation {
+        get { Orientation(rawValue: getExtraInt(key: ExtraKey.enabledOrientation) ?? 0) ?? .portrait }
+        set { updateExtra(key: ExtraKey.enabledOrientation, value: newValue.rawValue) }
+    }
+
+    func isEnabled(isLandscape: Bool) -> Bool {
+        enabledOrientation == (isLandscape ? .landscape : .portrait)
+    }
+
+    private enum ExtraKey {
+        static let enabledOrientation = "triggerProEnabledOrientation"
+    }
+
     var triggerProName: String {
         if let name, !name.isEmpty {
             return name
