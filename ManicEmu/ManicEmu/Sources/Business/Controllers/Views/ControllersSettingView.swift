@@ -7,6 +7,8 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+import RealmSwift
+
 class ControllersSettingView: BaseView {
     private var iconImageView: UIImageView = {
         let view = UIImageView()
@@ -122,6 +124,29 @@ class ControllersSettingView: BaseView {
         controllers.append(contentsOf: ExternalGameControllerManager.shared.connectedControllers)
         updateContents()
     }
+
+    private func clearAllControllerMappings() {
+        let realm = Database.realm
+        guard realm.objects(ControllerMapping.self).where({ !$0.isDeleted }).count > 0 else {
+            UIView.makeToast(message: R.string.localizable.clearAllControllerMappingsEmpty())
+            return
+        }
+
+        UIView.makeAlert(detail: R.string.localizable.clearAllControllerMappingsDesc(),
+                         confirmTitle: R.string.localizable.clearAllControllerMappings(),
+                         confirmAction: {
+            ControllerMapping.change { realm in
+                let mappings = realm.objects(ControllerMapping.self).where { !$0.isDeleted }
+                if Settings.defalut.iCloudSyncEnable {
+                    mappings.forEach { $0.isDeleted = true }
+                } else {
+                    realm.delete(mappings)
+                }
+            }
+            NotificationCenter.default.post(name: R.NotificationName.ControllerMapping, object: nil)
+            UIView.makeToast(message: R.string.localizable.clearAllControllerMappingsDone())
+        })
+    }
     
     private func handleAction(_ action: ASListPage.Action) {
         if let navigationValue = action.navigationValue {
@@ -136,10 +161,16 @@ class ControllersSettingView: BaseView {
                     
                 } else if index == 1 {
                     //more
-                    ChevronSheetView.show(stringOptions: [R.string.localizable.deadZoneSetting()],
-                                          completion: { index in
-                        if let _ = index {
+                    ChevronSheetView.show(cellOptions: [
+                        .iconTitleChevronCell(title: R.string.localizable.deadZoneSetting()),
+                        .iconTitleChevronCell(title: R.string.localizable.clearAllControllerMappings(),
+                                              titleColor: R.Color.Red)
+                    ], groupTogether: true, completion: { [weak self] index in
+                        guard let self, let index else { return }
+                        if index == 0 {
                             DeadZoneControl.show()
+                        } else if index == 1 {
+                            self.clearAllControllerMappings()
                         }
                     })
                 }

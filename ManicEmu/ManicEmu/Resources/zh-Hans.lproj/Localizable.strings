@@ -141,6 +141,10 @@
 "ControllersPlayerUnset" = "未指定";
 "ControllerLayout" = "手柄布局";
 "ControllerLayoutDesc" = "外接手柄的 ABXY 布局。Xbox 会交换 A/B、X/Y，按物理位置对应；自定义映射优先。";
+"ClearAllControllerMappings" = "清空所有映射";
+"ClearAllControllerMappingsDesc" = "确定删除所有手柄、所有平台的自定义映射？清空后所有手柄都会回到当前手柄布局。此操作不可撤销。";
+"ClearAllControllerMappingsDone" = "已清空所有自定义手柄映射";
+"ClearAllControllerMappingsEmpty" = "没有可清空的自定义手柄映射";
 
 //GameInfo
 "ReadyGameInfoSubTitle" = "%@游玩 · 总共%@";

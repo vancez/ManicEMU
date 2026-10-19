@@ -139,6 +139,10 @@
 "ControllersPlayerUnset" = "Unassigned";
 "ControllerLayout" = "Controller Layout";
 "ControllerLayoutDesc" = "Face-button layout for external controllers. Xbox swaps A/B and X/Y to follow physical button positions. Custom mappings take priority.";
+"ClearAllControllerMappings" = "Clear All Mappings";
+"ClearAllControllerMappingsDesc" = "Delete all custom mappings for every controller and platform? Every controller will fall back to the current controller layout. This cannot be undone.";
+"ClearAllControllerMappingsDone" = "All custom controller mappings cleared";
+"ClearAllControllerMappingsEmpty" = "No custom controller mappings to clear";
 
 // GameInfo Section
 "ReadyGameInfoSubTitle" = "%@ played · Total %@";
