@@ -111,4 +111,6 @@ enum ExtraKey: String {
     case rommPlayDurationPushed
     /// Whether game play time is recorded. Missing means enabled.
     case trackPlayTime
+    /// Face-button layout for external controllers. Missing means Nintendo/Switch layout.
+    case controllerLayout
 }

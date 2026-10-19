@@ -116,12 +116,13 @@ class ControllerMappingView: BaseView {
     private var selectedSkinInput: Input? = nil
     private var modifiedList = [GameType]()
     private var isKeyMapping = false
+    private var controllerMappingObserver: Any? = nil
     ///修改过的控制器映射
     private var modifiedControllerMappings: [GameType: GameControllerInputMapping] = [:]
-    ///默认控制器映射
-    private lazy var defaultControllerMapping: GameControllerInputMapping = {
-        return (gameController.defaultInputMapping as! GameControllerInputMapping)
-    }()
+    ///默认控制器映射（应用当前ABXY布局偏好）
+    private var defaultControllerMapping: GameControllerInputMapping {
+        return gameController.layoutAdjustedDefaultInputMapping ?? (gameController.defaultInputMapping as! GameControllerInputMapping)
+    }
     ///获取当前gameType的控制器映射
     private var currentGameTypeMapping: GameControllerInputMapping {
         if let inputMapping = modifiedControllerMappings[gameType] {
@@ -132,9 +133,8 @@ class ControllerMappingView: BaseView {
                 modifiedControllerMappings[gameType] = inputMapping
                 return inputMapping
             } else {
-                let inputMapping = gameController.defaultInputMapping! as! GameControllerInputMapping
-                modifiedControllerMappings[gameType] = inputMapping
-                return inputMapping
+                // Don't cache the default: the layout preference can change between openings.
+                return defaultControllerMapping
             }
         }
     }
@@ -149,6 +149,9 @@ class ControllerMappingView: BaseView {
     var didTapClose: (()->Void)? = nil
     
     deinit {
+        if let controllerMappingObserver {
+            NotificationCenter.default.removeObserver(controllerMappingObserver)
+        }
         gameController.removeReceiver(self)
     }
     
@@ -187,10 +190,23 @@ class ControllerMappingView: BaseView {
                 self.mapKeyboard(pressKey: pressKey)
             }
         } else {
-            gameController.addReceiver(self)
+            // Use the same effective mapping as currentGameTypeMapping so the pressed input
+            // matches the reverse lookup in gameController(_:didActivate:).
+            gameController.addReceiver(self, inputMapping: defaultControllerMapping)
         }
-        
-        
+
+        // The layout preference may change while this sheet is open; keep the bubbles and
+        // the input-capture mapping in sync.
+        controllerMappingObserver = NotificationCenter.default.addObserver(forName: R.NotificationName.ControllerMapping,
+                                                                           object: nil,
+                                                                           queue: .main) { [weak self] _ in
+            guard let self else { return }
+            if self.gameController.inputType != .keyboard {
+                self.gameController.addReceiver(self, inputMapping: self.defaultControllerMapping)
+            }
+            self.setupMappingBubble()
+        }
+
         addSubview(controllerView)
         controllerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -549,7 +565,13 @@ class ControllerMappingView: BaseView {
             }
             NotificationCenter.default.post(name: R.NotificationName.ControllerMapping, object: nil)
         }
+
+        // Reset to the effective default mapping (including the current ABXY layout).
+        if gameController.inputType != .keyboard {
+            gameController.addReceiver(self, inputMapping: defaultControllerMapping)
+        }
         stopMapping()
+        setupMappingBubble()
     }
 }
 

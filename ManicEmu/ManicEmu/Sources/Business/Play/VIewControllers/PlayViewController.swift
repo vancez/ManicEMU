@@ -1430,8 +1430,15 @@ extension PlayViewController {
                     controler.addReceiver(self, inputMapping: mapping)
                     controler.addReceiver(emulatorCore, inputMapping: mapping)
                 } else {
-                    controler.addReceiver(self)
-                    controler.addReceiver(emulatorCore)
+                    // No custom mapping: honor the selected face-button layout without touching custom ones.
+                    let defaultMapping = controler.layoutAdjustedDefaultInputMapping
+                    if let defaultMapping {
+                        controler.addReceiver(self, inputMapping: defaultMapping)
+                        controler.addReceiver(emulatorCore, inputMapping: defaultMapping)
+                    } else {
+                        controler.addReceiver(self)
+                        controler.addReceiver(emulatorCore)
+                    }
                 }
                 if let mfi = controler as? MFiGameController, manicGame.isLibretroType, let playerIndex = mfi.playerIndex {
                     if LibretroCore.sharedInstance().getSensorEnable(Int32(playerIndex)) {

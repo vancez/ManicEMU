@@ -23,6 +23,7 @@ struct SettingItem {
              onlinePlay,
              rumble,
              skinSound,
+             controllerLayout,
              retro,
              triggerPro,
              jit,
@@ -126,7 +127,10 @@ struct SettingItem {
             
         case .language:
             return .chevron(ASChevron(title: Locale.getSystemLanguageDisplayName(preferredLanguage: Settings.defalut.language)))
-            
+
+        case .controllerLayout:
+            return .chevron(ASChevron(title: Settings.controllerLayout.displayName))
+
         default:
             return .chevron(ASChevron())
         }
@@ -148,7 +152,7 @@ struct SettingItem {
             [R.Color.Indigo]
         case .quickGame, .iCloud, .triggerPro, .clearCache:
             [R.Color.Yellow]
-        case .fullScreenWhenConnectController, .jit, .language:
+        case .fullScreenWhenConnectController, .jit, .language, .controllerLayout:
             [R.Color.Cyan]
         case .bios, .shaders, .userAgreement:
             [R.Color.Magenta]
@@ -219,6 +223,8 @@ struct SettingItem {
             ASIcon.symbolImage(R.image.skin_iconSymbols(), colors: iconColors)
         case .globalCoreSwitch:
             ASIcon.symbolImage(R.image.core_iconSymbols(), colors: iconColors)
+        case .controllerLayout:
+            ASIcon.symbolImage(R.image.controller_iconSymbols(), colors: iconColors)
         case .coverScraping:
             ASIcon.symbolImage(R.image.cover_iconSymbols(), colors: iconColors)
         case .resetTips:
@@ -292,6 +298,8 @@ struct SettingItem {
             R.string.localizable.featuredItems()
         case .skinSound:
             R.string.localizable.skinSoundEffects()
+        case .controllerLayout:
+            R.string.localizable.controllerLayout()
         case .globalCoreSwitch:
             R.string.localizable.globalCoreSwitch()
         case .coverScraping:
@@ -352,6 +360,8 @@ struct SettingItem {
             return R.string.localizable.resetTipsDesc()
         } else if type == .playTimeTracking {
             return R.string.localizable.playTimeTrackingDesc()
+        } else if type == .controllerLayout {
+            return R.string.localizable.controllerLayoutDesc()
         } else if type == .clearResources {
             return R.string.localizable.clearResourcesDesc()
         }

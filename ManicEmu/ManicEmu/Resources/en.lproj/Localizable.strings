@@ -137,6 +137,8 @@
 "ControllersTouchName" = "Touch Control";
 "ControllersPlayerIndex" = "Player %d";
 "ControllersPlayerUnset" = "Unassigned";
+"ControllerLayout" = "Controller Layout";
+"ControllerLayoutDesc" = "Face-button layout for external controllers. Xbox swaps A/B and X/Y to follow physical button positions. Custom mappings take priority.";
 
 // GameInfo Section
 "ReadyGameInfoSubTitle" = "%@ played · Total %@";

@@ -16,6 +16,21 @@ extension Settings: CKRecordConvertible & CKRecordRecoverable {
     var isDeleted: Bool { return false }
 }
 
+/// Face-button layout for external controllers.
+enum ControllerLayout: Int, CaseIterable {
+    /// A on the right, B at the bottom, X on top, Y on the left.
+    case nintendo = 0
+    /// A at the bottom, B on the right, X on the left, Y on top.
+    case xbox = 1
+
+    var displayName: String {
+        switch self {
+        case .nintendo: return "Nintendo Switch"
+        case .xbox: return "Xbox"
+        }
+    }
+}
+
 class Settings: Object, ObjectUpdatable {
     //一定要在Database的setup调用后才调用此方法
     static let defalut: Settings  = {
@@ -172,6 +187,14 @@ class Settings: Object, ObjectUpdatable {
 
     static func setPlayTimeTrackingEnabled(_ enabled: Bool) {
         Settings.defalut.updateExtra(key: ExtraKey.trackPlayTime.rawValue, value: enabled)
+    }
+
+    static var controllerLayout: ControllerLayout {
+        ControllerLayout(rawValue: Settings.defalut.getExtraInt(key: ExtraKey.controllerLayout.rawValue) ?? 0) ?? .nintendo
+    }
+
+    static func setControllerLayout(_ layout: ControllerLayout) {
+        Settings.defalut.updateExtra(key: ExtraKey.controllerLayout.rawValue, value: layout.rawValue)
     }
 
     static var nickname: String {

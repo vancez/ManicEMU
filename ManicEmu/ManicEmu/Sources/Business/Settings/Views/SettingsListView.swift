@@ -76,6 +76,7 @@ class SettingsListView: BaseView {
 #if SIDE_LOAD
                 datas[section] = [.init(type: .airPlay),
                                   .init(type: .fullScreenWhenConnectController),
+                                  .init(type: .controllerLayout),
                                   .init(type: .bios),
                                   .init(type: .respectSilentMode),
                                   .init(type: .onlinePlay),
@@ -91,6 +92,7 @@ class SettingsListView: BaseView {
                 datas[section] = [.init(type: .airPlay),
                                   .init(type: .iCloud),
                                   .init(type: .fullScreenWhenConnectController),
+                                  .init(type: .controllerLayout),
                                   .init(type: .bios),
                                   .init(type: .respectSilentMode),
                                   .init(type: .onlinePlay),
@@ -455,7 +457,25 @@ class SettingsListView: BaseView {
                             upateSwitchSettings(extraValue: subActions?.extraValue, cellData: cellData, indexPath: indexPath) {
                                 Settings.defalut.fullScreenWhenConnectController = $0
                             }
-                            
+
+                        case .controllerLayout:
+                            let layouts = ControllerLayout.allCases
+                            OptionsSheetView.show(icon: .symbolImage(R.image.controller_iconSymbols()),
+                                                  title: R.string.localizable.controllerLayout(),
+                                                  detail: R.string.localizable.controllerLayoutDesc(),
+                                                  options: layouts.map({ $0.displayName }),
+                                                  selectedIndex: layouts.firstIndex(of: Settings.controllerLayout),
+                                                  groupTogether: true,
+                                                  completion: { [weak self] index in
+                                guard let self, let index, index < layouts.count else { return }
+                                let layout = layouts[index]
+                                guard layout != Settings.controllerLayout else { return }
+
+                                Settings.setControllerLayout(layout)
+                                self.listPageView?.updateCellData(cellData.updateNormalChevron(title: layout.displayName), indexPath: indexPath)
+                                NotificationCenter.default.post(name: R.NotificationName.ControllerMapping, object: nil)
+                            })
+
                         case .autoSaveState:
                             upateSwitchSettings(extraValue: subActions?.extraValue, cellData: cellData, indexPath: indexPath) {
                                 Settings.defalut.autoSaveState = $0

@@ -139,6 +139,8 @@
 "ControllersTouchName" = "屏幕控制器";
 "ControllersPlayerIndex" = "玩家%d";
 "ControllersPlayerUnset" = "未指定";
+"ControllerLayout" = "手柄按鍵配置";
+"ControllerLayoutDesc" = "外接手柄的 ABXY 配置。Xbox 會交換 A/B、X/Y，按物理位置對應；自訂映射優先。";
 
 //遊戲資訊
 "ReadyGameInfoSubTitle" = "%@遊玩 · 總共%@";
