@@ -734,7 +734,12 @@ class FileBrowserView: BaseView {
                             }
                         } else {
                             RommLibrary.shared.discardPendingLink(fileName: item.name)
-                            Log.debug("[RomM] download queue file=\(item.name) serviceId=\(provider.serviceId) download-only; no RomM link registered url=\(url.absoluteString)")
+                            let displayName = (item.json[RommServiceProvider.displayNameKey] as? String)?
+                                .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                            if !displayName.isEmpty {
+                                RommLibrary.shared.registerPendingDisplayName(fileName: item.name, name: displayName)
+                            }
+                            Log.debug("[RomM] download queue file=\(item.name) serviceId=\(provider.serviceId) download-only; displayName=\(displayName) url=\(url.absoluteString)")
                         }
                     }
                     headers = request?.allHTTPHeaderFields

@@ -1191,7 +1191,7 @@ Press the controller button to complete mapping...";
 "RommTransferFailed" = "Transfer failed. Check the server connection.";
 "RommLanAddressOnly" = "RomM currently accepts LAN IP addresses only (such as 192.168.x.x, 10.x.x.x, or 169.254.x.x). Hostnames and public IPs are not supported yet.";
 "RommDownloadOptionsTitle" = "Download from RomM";
-"RommDownloadOptionsDetail" = "Linking pulls covers, metadata, manuals, saves, and states, and enables sync. Download Only keeps just the file with no RomM link.";
+"RommDownloadOptionsDetail" = "Linking pulls covers, metadata, manuals, saves, and states, and enables sync. Download Only keeps just the file with no RomM link, but still uses the RomM game name.";
 "RommDownloadAndLink" = "Download and Link to RomM";
 "RommDownloadOnly" = "Download File Only";
 "LandServiceEditServerNamePlaceholder" = "My Server";

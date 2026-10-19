@@ -1159,7 +1159,7 @@ PlayCase 專注於製造高品質 iPhone 手機殼，設計時已充分考慮配
 "RommTransferFailed" = "同步失敗，請檢查伺服器連接。";
 "RommLanAddressOnly" = "RomM 目前僅支援局域網 IP 地址（如 192.168.x.x、10.x.x.x 或 169.254.x.x），暫不支援主機名和公網 IP。";
 "RommDownloadOptionsTitle" = "從 RomM 下載";
-"RommDownloadOptionsDetail" = "關聯後會拉取封面、元數據、手冊、存檔和即時存檔，並啟用同步；僅下載檔案不會建立任何 RomM 關聯。";
+"RommDownloadOptionsDetail" = "關聯後會拉取封面、元數據、手冊、存檔和即時存檔，並啟用同步；僅下載檔案不會建立任何 RomM 關聯，但仍會使用 RomM 的遊戲名稱。";
 "RommDownloadAndLink" = "下載並關聯 RomM";
 "RommDownloadOnly" = "僅下載檔案";
 "LandServiceEditServerNamePlaceholder" = "我的伺服器";

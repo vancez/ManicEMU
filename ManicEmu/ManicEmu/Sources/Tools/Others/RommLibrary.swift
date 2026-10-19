@@ -45,6 +45,41 @@ final class RommLibrary {
         Log.debug("[RomM] pending discarded file=\(fileName)")
     }
 
+    // MARK: - Pending display name (download-only)
+
+    private static let pendingDisplayNamesKey = "RomMPendingDisplayNames"
+
+    /// Display name to apply when a download-only RomM import creates a new game.
+    func registerPendingDisplayName(fileName: String, name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        var map = pendingDisplayNames()
+        map[fileName] = trimmed
+        UserDefaults.standard.set(map, forKey: Self.pendingDisplayNamesKey)
+        Log.debug("[RomM] pending display name registered file=\(fileName) name=\(trimmed)")
+    }
+
+    func discardPendingDisplayName(fileName: String) {
+        var map = pendingDisplayNames()
+        guard map[fileName] != nil else { return }
+        map[fileName] = nil
+        UserDefaults.standard.set(map, forKey: Self.pendingDisplayNamesKey)
+        Log.debug("[RomM] pending display name discarded file=\(fileName)")
+    }
+
+    func consumePendingDisplayName(fileName: String) -> String? {
+        var map = pendingDisplayNames()
+        guard let name = map[fileName] else { return nil }
+        map[fileName] = nil
+        UserDefaults.standard.set(map, forKey: Self.pendingDisplayNamesKey)
+        Log.debug("[RomM] pending display name consumed file=\(fileName) name=\(name)")
+        return name
+    }
+
+    private func pendingDisplayNames() -> [String: String] {
+        UserDefaults.standard.dictionary(forKey: Self.pendingDisplayNamesKey) as? [String: String] ?? [:]
+    }
+
     /// Bind extras and pull sidecar data after a newly created game import.
     func applyAfterImport(gameId: String, fileName: String? = nil) {
         Log.debug("[RomM] applyAfterImport start gameId=\(gameId) file=\(fileName ?? "nil") main=\(Thread.isMainThread)")

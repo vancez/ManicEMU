@@ -718,8 +718,13 @@ extension FilesImporter {
                                     try FileManager.safeCopyItem(at: url, to: game.romUrl, shouldReplace: true)
                                 }
                             }
+                            let rommDisplayName = RommLibrary.shared.consumePendingDisplayName(fileName: originalUrl.lastPathComponent)
+                                ?? RommLibrary.shared.consumePendingDisplayName(fileName: game.fileName)
                             do {
                                 try realm.write {
+                                    if let rommDisplayName, !rommDisplayName.isEmpty {
+                                        game.aliasName = rommDisplayName
+                                    }
                                     FilesSyncPolicy.applyDefaultROMSyncFlag(to: game)
                                     realm.add(game)
                                 }
@@ -728,10 +733,11 @@ extension FilesImporter {
                                 })
                                 if RommLibrary.shared.hasPendingLink(fileName: originalUrl.lastPathComponent)
                                     || RommLibrary.shared.hasPendingLink(fileName: game.fileName) {
+                                    RommLibrary.shared.discardPendingDisplayName(fileName: originalUrl.lastPathComponent)
                                     Log.debug("[RomM] import success, apply sidecar original=\(originalUrl.lastPathComponent) gameFile=\(game.fileName) gameId=\(game.id)")
                                     RommLibrary.shared.applyAfterImport(gameId: game.id, fileName: originalUrl.lastPathComponent)
                                 } else {
-                                    Log.debug("[RomM] import success, no pending link original=\(originalUrl.lastPathComponent) gameFile=\(game.fileName)")
+                                    Log.debug("[RomM] import success, no pending link original=\(originalUrl.lastPathComponent) gameFile=\(game.fileName) displayName=\(rommDisplayName ?? "nil")")
                                     OnlineCoverManager.shared.addCoverMatch(OnlineCoverManager.CoverMatch(game: game))
                                 }
                                 completion?(game.id, game.gameType == ._3ds ? (game.displayName) : game.name, nil)
@@ -779,6 +785,7 @@ extension FilesImporter {
     
     private static func discardRommPending(fileName: String) {
         RommLibrary.shared.discardPendingLink(fileName: fileName)
+        RommLibrary.shared.discardPendingDisplayName(fileName: fileName)
     }
     
     private static func removeCIA(ciaTitleUrl: URL?) {
