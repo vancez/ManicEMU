@@ -449,7 +449,7 @@ class FileBrowserView: BaseView {
             case .cloudDrive:
                 if provider is RommServiceProvider,
                    selectedPageItems.contains(where: { !$0.isDirectory }) {
-                    presentRommDownloadOptions()
+                    presentRommDownloadOptions(items: selectedPageItems)
                 } else {
                     downloadFiles(items: selectedPageItems)
                 }
@@ -460,6 +460,9 @@ class FileBrowserView: BaseView {
 
 
         } else if let index = action.normalItemValue?.indexPath.section {
+            if rommPlatformID != nil, rommSearchField.isFirstResponder {
+                rommSearchField.resignFirstResponder()
+            }
             if isEditMode {
                 if selectedItems.contains(index) {
                     //deselected save state
@@ -472,11 +475,16 @@ class FileBrowserView: BaseView {
                 let item = currentPageItems[index]
                 switch browserType {
                 case .cloudDrive:
-                    loadFiles(page: item)
-                    
+                    if provider is RommServiceProvider, !item.isDirectory {
+                        // A single tap on a RomM ROM opens the download options directly.
+                        presentRommDownloadOptions(items: [item])
+                    } else {
+                        loadFiles(page: item)
+                    }
+
                 case .local:
                     loadFiles(url: URL(fileURLWithPath: item.path))
-                    
+
                 }
             }
         } else if let index = action.longPressValue?.section {
@@ -575,7 +583,7 @@ class FileBrowserView: BaseView {
                     cells.append(.iconTitleDetailCell(icon: .image(R.image.file_browser_document()),
                                                       title: title,
                                                       detail: detail,
-                                                      enablePressEffect: false))
+                                                      enablePressEffect: provider is RommServiceProvider))
                 }
             }
         }
@@ -609,7 +617,8 @@ class FileBrowserView: BaseView {
         listPageView.tool = getToolView()
     }
     
-    private func presentRommDownloadOptions() {
+    private func presentRommDownloadOptions(items: [CloudItem]) {
+        rommSearchField.resignFirstResponder()
         ChevronSheetView.show(icon: .symbol(.arrowDownToLine),
                               title: R.string.localizable.rommDownloadOptionsTitle(),
                               detail: R.string.localizable.rommDownloadOptionsDetail(),
@@ -623,9 +632,9 @@ class FileBrowserView: BaseView {
             guard let self else { return }
             switch index {
             case 0:
-                self.downloadFiles(items: self.selectedPageItems, bindToRomm: true)
+                self.downloadFiles(items: items, bindToRomm: true)
             case 1:
-                self.downloadFiles(items: self.selectedPageItems, bindToRomm: false)
+                self.downloadFiles(items: items, bindToRomm: false)
             default:
                 break
             }
