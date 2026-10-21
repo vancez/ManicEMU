@@ -682,7 +682,13 @@
 "Flat" = "扁平";
 "Custom" = "自定义";
 "Size" = "大小";
-"Opacity" = "透明度";
+"Opacity" = "不透明度";
+"ControllerButton" = "手柄按键";
+"ControllerButtonUnbound" = "未绑定";
+"ControllerButtonPrompt" = "请按下外接手柄上的按键。";
+"ControllerButtonDuplicate" = "该按键已绑定到其他宏按钮";
+"ControllerButtonConnectFirst" = "请先连接手柄";
+"ControllerButtonClear" = "清除绑定";
 "CornerRadius" = "圆角";
 "Simple" = "单击";
 "Hold" = "长按";

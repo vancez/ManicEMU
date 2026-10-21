@@ -146,7 +146,7 @@ class TriggerItem: Object {
     @Persisted var buttonHeight: Double = Style.classic.defaultSize.height
     ///按钮的size
     var buttonSize: CGSize { .init(width: buttonWidth, height: buttonHeight) }
-    ///按钮透明度 0-1
+    ///按钮不透明度 0-1
     @Persisted var buttonOpacity: Double = 1
     ///按钮圆角 百分比 0是矩形 100是圆形
     @Persisted var buttonCornerRadiusRatio: Double = 100.0
@@ -271,6 +271,63 @@ class Trigger: Object, ObjectUpdatable {
 
     private enum ExtraKey {
         static let enabledOrientation = "triggerProEnabledOrientation"
+        static let controllerBindings = "triggerProControllerBindings"
+    }
+
+    /// External controller button bindings for this TriggerPro, keyed by TriggerItem.id.
+    /// Stored in extras so adding this feature does not require a Realm migration.
+    var controllerBindings: [String: String] {
+        guard let rawBindings = getExtra(key: ExtraKey.controllerBindings) as? [String: Any] else { return [:] }
+        var bindings = [String: String]()
+        for (itemID, input) in rawBindings {
+            if let input = input as? String, !input.isEmpty {
+                bindings[itemID] = input
+            }
+        }
+        return bindings
+    }
+
+    func controllerInput(for itemID: Int) -> String? {
+        return controllerBindings["\(itemID)"]
+    }
+
+    func hasControllerBindingConflict(input: String, excluding itemID: Int) -> Bool {
+        for (itemIDString, boundInput) in controllerBindings where boundInput == input && itemIDString != "\(itemID)" {
+            if let boundItemID = Int(itemIDString), items.contains(where: { $0.id == boundItemID }) {
+                return true
+            }
+        }
+        return false
+    }
+
+    func setControllerInput(_ input: String?, for itemID: Int) {
+        var bindings = controllerBindings
+        let itemIDString = "\(itemID)"
+        if let input, !input.isEmpty {
+            bindings[itemIDString] = input
+        } else {
+            bindings.removeValue(forKey: itemIDString)
+        }
+        setControllerBindings(bindings)
+    }
+
+    func setControllerBindings(_ bindings: [String: String]) {
+        let data: Data?
+        if let extras, let merged = Self.updateExtra(extras: extras, key: ExtraKey.controllerBindings, value: bindings) {
+            data = merged
+        } else {
+            data = ([ExtraKey.controllerBindings: bindings] as [String: Any]).jsonData()
+        }
+        guard let data else { return }
+
+        // The editor works on an unmanaged copy; runtime triggers only read this value.
+        if realm == nil {
+            self.extras = data
+        } else {
+            Self.change { _ in
+                self.extras = data
+            }
+        }
     }
 
     var triggerProName: String {
@@ -311,9 +368,13 @@ class Trigger: Object, ObjectUpdatable {
         trigger.extras = extras
         trigger.name = name
         trigger.items = List<TriggerItem>()
+        var itemIDRemap = [String: String]()
         for (index, item) in items.enumerated() {
             let triggerItem = TriggerItem()
             triggerItem.id = newId ? PersistedKit.incrementID + index : item.id
+            if newId {
+                itemIDRemap["\(item.id)"] = "\(triggerItem.id)"
+            }
             triggerItem.isDeleted = item.isDeleted
             triggerItem.style = item.style
             triggerItem.customImage = item.customImage
@@ -335,6 +396,16 @@ class Trigger: Object, ObjectUpdatable {
             triggerItem.comboActionPressDurationPerKey = item.comboActionPressDurationPerKey
             triggerItem.comboActionIntervalPerKey = item.comboActionIntervalPerKey
             trigger.items.append(triggerItem)
+        }
+
+        if newId {
+            var bindings = [String: String]()
+            for (oldItemID, input) in controllerBindings {
+                if let newItemID = itemIDRemap[oldItemID] {
+                    bindings[newItemID] = input
+                }
+            }
+            trigger.setControllerBindings(bindings)
         }
         return trigger
     }

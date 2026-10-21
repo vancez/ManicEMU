@@ -126,6 +126,7 @@ class TriggerProPreviewController: BaseViewController {
             AddTriggerButtonView.show(triggerItem: item,
                                       gameType: self.trigger.gameType,
                                       inputs: self.getInputs(),
+                                      trigger: self.trigger,
                                       hideCompletion: { [weak self] in
                 guard let self else { return }
                 self.triggerProView.reloadButtons()
@@ -163,13 +164,14 @@ class TriggerProPreviewController: BaseViewController {
                              cancelAction: { [weak self] in
                 guard let self else { return }
                 //编辑
-                AddTriggerButtonView.show(triggerItem: item, gameType: self.trigger.gameType, inputs: self.getInputs(), hideCompletion: { [weak self] in
+                AddTriggerButtonView.show(triggerItem: item, gameType: self.trigger.gameType, inputs: self.getInputs(), trigger: self.trigger, hideCompletion: { [weak self] in
                     guard let self else { return }
                     self.triggerProView.reloadButtons()
                 })
             }, confirmAction: { [weak self] in
                 guard let self else { return }
                 if let index = self.trigger.items.firstIndex(of: item) {
+                    self.trigger.setControllerInput(nil, for: item.id)
                     self.trigger.items.remove(at: index)
                     self.triggerProView.reloadButtons()
                 }

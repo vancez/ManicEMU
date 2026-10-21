@@ -102,6 +102,10 @@ class TriggerProView: BaseView {
     
     private var buttonStates: [TriggerButton: ButtonState] = [:]
     private var buttonConfigMap: [TriggerButton: ItemConfig] = [:]
+    /// Controller input string -> macro button, derived from Trigger.extras.
+    private var controllerInputButtons: [String: TriggerButton] = [:]
+    /// Controller inputs currently held, so release uses the button captured on press.
+    private var controllerPressedInputs: [String: TriggerButton] = [:]
     private let timerQueue = DispatchQueue(label: "com.manicemu.trigger.timer", qos: .userInteractive)
     
     init(trigger: Trigger, isEditMode: Bool = false) {
@@ -141,6 +145,12 @@ class TriggerProView: BaseView {
         buttonStates.removeAll()
         buttonConfigMap.removeAll()
         buttonsWithoutPosition.removeAll()
+        controllerInputButtons.removeAll()
+        controllerPressedInputs.removeAll()
+
+        // External controller bindings are stored in Trigger.extras, keyed by item id.
+        let bindings = trigger.controllerBindings
+        let boundItemIDs = Set(bindings.compactMap({ Int($0.key) }))
 
         // 第一遍：创建所有按钮，有坐标的直接设置位置
         for item in trigger.items {
@@ -155,35 +165,69 @@ class TriggerProView: BaseView {
                                        buttonCornerRadius: item.buttonCornerRadius,
                                        buttonOpacity: item.buttonOpacity,
                                        isEditMode: isEditMode)
+            // Controller-only macros stay in the action maps but are not drawn in-game.
+            let isControllerBound = !isEditMode && boundItemIDs.contains(item.id)
+            button.isHidden = isControllerBound
+            button.isUserInteractionEnabled = !isControllerBound
             addSubview(button)
-            
+
             // 建立按钮和 item 的映射关系
             buttonItemMap[button] = item
-            
+
             // 提取配置数据（值类型，可以安全地在线程间传递）
             buttonConfigMap[button] = ItemConfig(item: item)
-            
+
             // 添加手势识别器
             setupGestures(for: button)
-            if let position = item.position {
-                if self.frame.contains(position) {
-                    button.x = position.x
-                    button.y = position.y
+            if !isControllerBound {
+                if let position = item.position {
+                    if self.frame.contains(position) {
+                        button.x = position.x
+                        button.y = position.y
+                    } else {
+                        //超出屏幕外部了
+                        buttonsWithoutPosition.append(button)
+                    }
                 } else {
-                    //超出屏幕外部了
+                    // 收集没有坐标的按钮，稍后统一布局
                     buttonsWithoutPosition.append(button)
                 }
-            } else {
-                // 收集没有坐标的按钮，稍后统一布局
-                buttonsWithoutPosition.append(button)
             }
         }
-        
+
+        if !bindings.isEmpty {
+            var itemButtons = [Int: TriggerButton]()
+            for (button, item) in buttonItemMap {
+                itemButtons[item.id] = button
+            }
+            for (itemIDString, input) in bindings {
+                if let itemID = Int(itemIDString), let button = itemButtons[itemID] {
+                    controllerInputButtons[input] = button
+                }
+            }
+        }
+
         // 第二遍：为没有坐标的按钮进行自动布局
         if !buttonsWithoutPosition.isEmpty {
             needsLayoutButtons = true
             setNeedsLayout()
         }
+    }
+
+    /// Runs a macro from a Player 1 external controller button without showing any on-screen binding UI.
+    @discardableResult
+    func activateControllerInput(_ input: String) -> Bool {
+        guard !isEditMode, !isHidden, isEnabledInCurrentOrientation else { return false }
+        guard let button = controllerInputButtons[input], controllerPressedInputs[input] == nil else { return false }
+
+        controllerPressedInputs[input] = button
+        activateButtons(Set([button]))
+        return true
+    }
+
+    func deactivateControllerInput(_ input: String) {
+        guard let button = controllerPressedInputs.removeValue(forKey: input) else { return }
+        deactivateButtons(Set([button]))
     }
     
     private func layoutButtonsInCenter(_ buttons: [TriggerButton]) {
@@ -319,6 +363,7 @@ class TriggerProView: BaseView {
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         // 遍历所有子视图（按钮），检查点击是否在某个按钮上
         for subview in subviews.reversed() {
+            guard !subview.isHidden else { continue }
             let convertedPoint = subview.convert(point, from: self)
             if subview.bounds.contains(convertedPoint) {
                 if isEditMode {
@@ -369,6 +414,7 @@ class TriggerProView: BaseView {
             var needsActivetedbuttons: [TriggerButton] = []
             
             for button in buttonItemMap.keys {
+                guard !button.isHidden else { continue }
                 let convertedPoint = button.convert(point, from: self)
                 if button.bounds.contains(convertedPoint), let _ = buttonItemMap[button] {
                     needsActivetedbuttons.append(button)

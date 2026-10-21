@@ -121,6 +121,24 @@ class PlayViewController: GameViewController {
     private var challengeAchievements: [CheevosAchievement] = []
     ///TriggerProView
     private var triggerProView: TriggerProView?
+    /// Raw external-controller input used only by Player 1 TriggerPro macros.
+    private lazy var triggerMacroInputReceiver: TriggerMacroInputReceiver = {
+        let receiver = TriggerMacroInputReceiver()
+        receiver.onActivate = { [weak self] gameController, input in
+            guard let self,
+                  gameController.playerIndex == 0,
+                  // TriggerPro delivers macros through the touch controller; require it to be Player 1.
+                  PlayViewController.skinControllerPlayerIndex == 0,
+                  ExternalInputDispatch.sink == .gameplay,
+                  !self.isPaused else { return }
+            self.triggerProView?.activateControllerInput(input.stringValue)
+        }
+        receiver.onDeactivate = { [weak self] gameController, input in
+            guard gameController.playerIndex == 0 else { return }
+            self?.triggerProView?.deactivateControllerInput(input.stringValue)
+        }
+        return receiver
+    }()
     ///背景图片
     private var backgroundImageView: UIImageView? = nil
     ///flex皮肤的menu和flex按钮
@@ -1411,6 +1429,9 @@ extension PlayViewController {
     private func updateExternalGameController() {
         if let emulatorCore = self.emulatorCore {
             let realm = Database.realm
+            for controler in ExternalGameControllerManager.shared.connectedControllers where controler.inputType == .mfi {
+                controler.addReceiver(triggerMacroInputReceiver, inputMapping: nil)
+            }
             for controler in ExternalGameControllerManager.shared.connectedControllers {
                 //flash uses the raw keyboard for input
                 if manicGame.gameType == .flash,
@@ -1565,6 +1586,7 @@ extension PlayViewController {
         ExternalGameControllerManager.shared.isKeyboardInputEnabled = true
         for controller in ExternalGameControllerManager.shared.connectedControllers {
             controller.removeReceiver(self)
+            controller.removeReceiver(triggerMacroInputReceiver)
             if let emulatorCore {
                 controller.removeReceiver(emulatorCore)
             }
@@ -4764,6 +4786,37 @@ extension PlayViewController {
     static func updateWiiController() {
         if let currentPlayViewController {
             currentPlayViewController.updateWiiController()
+        }
+    }
+}
+
+/// Receives raw MFi button edges without affecting the normal controller mapping.
+/// PlayViewController decides whether Player 1 owns the macro and whether TriggerPro is active.
+private final class TriggerMacroInputReceiver: NSObject, GameControllerReceiver {
+    var onActivate: ((any GameController, any Input) -> Void)?
+    var onDeactivate: ((any GameController, any Input) -> Void)?
+
+    func gameController(_ gameController: any GameController, didActivate input: any Input, value: Double) {
+        guard gameController.inputType == .mfi, !input.isContinuous, value >= 0.5 else { return }
+        let callback: () -> Void = {
+            _ = self.onActivate?(gameController, input)
+        }
+        if Thread.isMainThread {
+            callback()
+        } else {
+            DispatchQueue.main.async(execute: callback)
+        }
+    }
+
+    func gameController(_ gameController: any GameController, didDeactivate input: any Input) {
+        guard gameController.inputType == .mfi else { return }
+        let callback: () -> Void = {
+            _ = self.onDeactivate?(gameController, input)
+        }
+        if Thread.isMainThread {
+            callback()
+        } else {
+            DispatchQueue.main.async(execute: callback)
         }
     }
 }
